@@ -25,7 +25,9 @@ function xmlrequest(type,url,content=null,func=null) {
 function init() {
     $('#add-item-button').click(addList);
     $('#get-item-button').click(getList);
-    $('#to-do-list-items').click(updateAndDelete);
+    $('#to-do-list-items').click(function updateAndDelete1(event){
+        updateAndDelete(event);
+    });
         
 }
 
@@ -42,9 +44,27 @@ function getList() {
     
     //sowmya's code
 }
-function updateAndDelete() {
-    console.log("updateDelete");
 
+function updateAndDelete(event) {
+    console.log("updateDelete");
+    var element = event.srcElement;
+    var getId = element.dataset.id.split('-');
+    if(getId[0] == 'delete') {
+        if(window.confirm('Do you want to delete the selected list item?') == true) {
+            document.querySelector('.listitem-'+getId[3]).remove();
+            //Code for gayathri
+        }
+    } else if(getId[0] == 'update') {
+        if(document.querySelector('.task-desc-' + getId[3]).classList.contains('strike-text')){
+            document.querySelector('.task-desc-' + getId[3]).classList.remove('strike-text');
+            element.innerHTML = 'Check';
+            xmlrequest("put", "checkListItem/"+getId[3], null)
+        } else {
+            document.querySelector('.task-desc-' + getId[3]).classList.add('strike-text');
+            element.innerHTML = 'Uncheck';
+            xmlrequest("put", "uncheckListItem/"+getId[3], null)
+        }
+    }
     //raxir and gayathri code 
 }
 
@@ -76,4 +96,5 @@ function createItem(id) {
     newList.appendChild(deleteButton);
     fragment.appendChild(newList);
     element.insertBefore(fragment,element.childNodes[0]);
+
 }
