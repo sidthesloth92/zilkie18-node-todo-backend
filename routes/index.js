@@ -65,5 +65,16 @@ router.put('/uncheckListItem/:id',function(req,res,next) {
 
 router.delete('/listItem',function(req,res,next) {
   //Gayathri's code
+  var id = req.params.id;
+  var list_array=structure.listItems;
+  var index = list_array.findIndex(function(element) {
+    return element.id==id;
+  });
+  if( list_array[index].ischecked===true)
+  {
+    structure.noOfItemsChecked--;
+  }
+   list_array.splice(index,1);
+
 });
 module.exports = router;

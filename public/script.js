@@ -52,6 +52,8 @@ function updateAndDelete(event) {
     if(getId[0] == 'delete') {
         if(window.confirm('Do you want to delete the selected list item?') == true) {
             document.querySelector('.listitem-'+getId[3]).remove();
+            xmlrequest("delete", "listItem/"+getId[3], null);
+
             //Code for gayathri
         }
     } else if(getId[0] == 'update') {
