@@ -1,16 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
-var structure = {
-  listItems : [],
-  noOfItemsChecked : 0
-};
+var toDoList= {'listItems':[],'noOfItemsChecked':0};
+
 function getId() {
-  if(structure.listItems.length==0) {
+  if(toDoList.listItems.length==0) {
     return 1;
   }
   else {
-    return structure.listItems[structure.listItems.length-1].id+1;
+
+    return (toDoList.listItems[(toDoList.listItems.length)-1].id)+1;
   }
 }
 
@@ -32,16 +31,14 @@ router.get('/goodbye', function(req, res, next) {
   // res.render('index', { title: 'Express' });
 });
 
-router.post('/listItem',function(req,res,next) {
-  //Naveen's code
-   
-  var id = getId();
-    var listItem = createListItem(id,"something");
-    structure.listItems.push(listItem);
-    res.end("successfully added your item to the database");
-    
-   
 
+router.post('/listItem',function(req,res,next) {
+  //Naveen's code 
+  
+    var id = getId();
+    var listItem = new createListItem(id,req.body.desc);
+    toDoList.listItems.push(listItem);
+    res.end(""+id);
 });
 
 router.get('/listItem',function(req,res,next) {
