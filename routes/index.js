@@ -48,8 +48,22 @@ router.get('/listItem',function(req,res,next) {
   //Sowmya's code
 });
 
-router.put('/listItem',function(req,res,next) {
-  //Raxit's code
+router.put('/checkListItem/:id',function(req,res,next) {
+  var id = req.params.id;
+  var index = structure.listItems.findIndex(function(item, i) {
+    return item.id == id;
+  });
+  structure.noOfItemsChecked++;
+  structure.noOfItemsChecked[index].ischecked = true;
+});
+
+router.put('/uncheckListItem/:id',function(req,res,next) {
+  var id = req.params.id;
+  var index = structure.listItems.findIndex(function(item, i) {
+    return item.id == id;
+  });
+  structure.noOfItemsChecked--;
+  structure.noOfItemsChecked[index].ischecked = false;
 });
 
 router.delete('/listItem',function(req,res,next) {
