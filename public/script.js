@@ -3,14 +3,11 @@ var todosUl = window.document.querySelector('ul');
 var fragment = window.document.createDocumentFragment();
 
 window.onload=function() {
-    // console.log("hello");
     init();
-
 }
 
 function xmlrequest(type,url,content=null,func=null) {
     // define the type of request either get,put,delete or post
-    
         var request = new window.XMLHttpRequest();
         request.onreadystatechange = function() {
             if(request.readyState == 4&&request.status == 200) {
@@ -36,10 +33,12 @@ function init() {
 }
 
 function addList() {
-
-    var text = $('#add-list-item').val();
-    xmlrequest("post","listItem","desc="+text,createItem);
-    
+    var text = $('#add-list-item').val().replace(/^\s+$/g, '');
+    if(text.length == 0) {
+        alert('Enter the task in the text field');
+    } else {
+        xmlrequest("post","listItem","desc="+text,createItem);
+    }
 }
 
 
@@ -106,31 +105,28 @@ var handleRequestStateChange = function handleRequestStateChange() {
 }
 
 function updateAndDelete(event) {
-    console.log("updateDelete");
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if(getId[0] == 'delete') {
         if(window.confirm('Do you want to delete the selected list item?') == true) {
             window.document.querySelector('li[data-id="'+getId[4]+'"]').remove();
-            xmlrequest("delete", "listItem?id="+getId[4], null)
-            //Code for gayathri
+            xmlrequest("delete", "listItem?id="+getId[4], null, null);
         }
     } else if(getId[0] == 'update') {
-        if(document.querySelector('.task-desc-' + getId[3]).classList.contains('strike-text')){
-            document.querySelector('.task-desc-' + getId[3]).classList.remove('strike-text');
+        if(document.querySelector('div[data-id="list-text-' + getId[4]+'"]').classList.contains('line-through')){
+            document.querySelector('div[data-id="list-text-' + getId[4]+'"]').classList.remove('line-through');
             element.innerHTML = 'Check';
-            xmlrequest("put", "checkListItem/"+getId[3], null)
+            xmlrequest("put", "checkListItem?id="+getId[4], null, null);
         } else {
-            document.querySelector('.task-desc-' + getId[3]).classList.add('strike-text');
+            document.querySelector('div[data-id="list-text-' + getId[4]+'"]').classList.add('line-through');
             element.innerHTML = 'Uncheck';
-            xmlrequest("put", "uncheckListItem/"+getId[3], null)
+            xmlrequest("put", "uncheckListItem?id="+getId[4], null, null);
         }
     }
-    //raxir and gayathri code 
 }
 
 function createItem(id) {
-    var text = $('#add-list-item').val();
+    var text = $('#add-list-item').val().replace(/^\s+$/g, '');
     var element = document.getElementById("to-do-list-items");
     var fragment = document.createDocumentFragment();
     var newList = document.createElement('li');
@@ -144,18 +140,17 @@ function createItem(id) {
     checkedButton.classList.add('checked-button');
     checkedButton.classList.add('list-button');
     listText.textContent=text;
-    var currentListId = 'list-item-id-'+id;
     var currentCheckId = 'update-item-button-id-'+id;
     var currentDeleteId = 'delete-item-button-id-'+id;
     newList.dataset.id=id;
+    listText.dataset.id='list-text-'+id;
     checkedButton.dataset.id=currentCheckId;
     deleteButton.dataset.id=currentDeleteId;
-    deleteButton.textContent='delete';
-    checkedButton.textContent='update';
+    deleteButton.textContent='Delete';
+    checkedButton.textContent='Check';
     newList.appendChild(listText);
     newList.appendChild(checkedButton);
     newList.appendChild(deleteButton);
     fragment.appendChild(newList);
     element.insertBefore(fragment,element.childNodes[0]);
-
 }

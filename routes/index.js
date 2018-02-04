@@ -6,9 +6,7 @@ var toDoList= {'listItems':[],'noOfItemsChecked':0};
 function getId() {
   if(toDoList.listItems.length==0) {
     return 1;
-  }
-  else {
-
+  } else {
     return (toDoList.listItems[(toDoList.listItems.length)-1].id)+1;
   }
 }
@@ -33,8 +31,6 @@ router.get('/goodbye', function(req, res, next) {
 
 
 router.post('/listItem',function(req,res,next) {
-  //Naveen's code 
-  
     var id = getId();
     var listItem = new createListItem(id,req.body.desc);
     toDoList.listItems.push(listItem);
@@ -52,26 +48,25 @@ router.get('/listItem',function(req,res,next) {
   }
 });
 
-router.put('/checkListItem/:id',function(req,res,next) {
-  var id = req.params.id;
-  var index = structure.listItems.findIndex(function(item, i) {
+router.put('/checkListItem',function(req,res,next) {
+  var id = req.query.id;
+  var index = toDoList.listItems.findIndex(function(item, i) {
     return item.id == id;
   });
-  structure.noOfItemsChecked++;
-  structure.noOfItemsChecked[index].ischecked = true;
+  toDoList.noOfItemsChecked--;
+  toDoList.listItems[index].ischecked = false;
 });
 
-router.put('/uncheckListItem/:id',function(req,res,next) {
-  var id = req.params.id;
-  var index = structure.listItems.findIndex(function(item, i) {
+router.put('/uncheckListItem',function(req,res,next) {
+  var id = req.query.id;
+  var index = toDoList.listItems.findIndex(function(item) {
     return item.id == id;
   });
-  structure.noOfItemsChecked--;
-  structure.noOfItemsChecked[index].ischecked = false;
+  toDoList.noOfItemsChecked++;
+  toDoList.listItems[index].ischecked = true;
 });
 
 router.delete('/listItem',function(req,res,next) {
-  //Gayathri's code
   var id = req.query.id;
   var list_array=toDoList.listItems;
   var index = list_array.findIndex(function(element) {
@@ -79,9 +74,8 @@ router.delete('/listItem',function(req,res,next) {
   });
   if( list_array[index].ischecked===true)
   {
-    structure.noOfItemsChecked--;
+    toDoList.noOfItemsChecked--;
   }
-   list_array.splice(index,1);
-
+  toDoList.listItems.splice(index,1);
 });
 module.exports = router;
