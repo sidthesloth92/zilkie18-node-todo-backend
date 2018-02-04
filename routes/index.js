@@ -72,8 +72,8 @@ router.put('/uncheckListItem/:id',function(req,res,next) {
 
 router.delete('/listItem',function(req,res,next) {
   //Gayathri's code
-  var id = req.params.id;
-  var list_array=structure.listItems;
+  var id = req.query.id;
+  var list_array=toDoList.listItems;
   var index = list_array.findIndex(function(element) {
     return element.id==id;
   });

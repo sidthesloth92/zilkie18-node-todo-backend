@@ -107,13 +107,12 @@ var handleRequestStateChange = function handleRequestStateChange() {
 
 function updateAndDelete(event) {
     console.log("updateDelete");
-    var element = event.srcElement;
+    var element = event.target;
     var getId = element.dataset.id.split('-');
     if(getId[0] == 'delete') {
         if(window.confirm('Do you want to delete the selected list item?') == true) {
-            document.querySelector('.listitem-'+getId[3]).remove();
-            xmlrequest("delete", "listItem/"+getId[3], null);
-
+            window.document.querySelector('li[data-id="'+getId[4]+'"]').remove();
+            xmlrequest("delete", "listItem?id="+getId[4], null)
             //Code for gayathri
         }
     } else if(getId[0] == 'update') {
