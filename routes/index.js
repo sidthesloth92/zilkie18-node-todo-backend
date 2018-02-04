@@ -41,8 +41,15 @@ router.post('/listItem',function(req,res,next) {
     res.end(""+id);
 });
 
+
 router.get('/listItem',function(req,res,next) {
-  //Sowmya's code
+  if(toDoList == null)
+  {
+    res.send("Nothing to Display");
+  }
+  else {
+   res.json(toDoList);
+  }
 });
 
 router.put('/checkListItem/:id',function(req,res,next) {
