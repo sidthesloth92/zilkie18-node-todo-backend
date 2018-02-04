@@ -56,7 +56,7 @@ function updateAndDelete(event) {
             element.innerHTML = 'Check';
             xmlrequest("put", "checkListItem/"+getId[3], null)
         } else {
-            document.querySelector('.taskname-' + getId[3]).classList.add('strikeText');
+            document.querySelector('.task-desc-' + getId[3]).classList.add('strike-text');
             element.innerHTML = 'Uncheck';
             xmlrequest("put", "uncheckListItem/"+getId[3], null)
         }
