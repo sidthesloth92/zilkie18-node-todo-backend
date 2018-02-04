@@ -50,7 +50,7 @@ function updateAndDelete(event) {
             document.querySelector('.listitem-'+getId[3]).remove();
             //Code for gayathri
         }
-    } else if(getId[1] == 'update') {
+    } else if(getId[0] == 'update') {
         if(document.querySelector('.task-desc-' + getId[3]).classList.contains('strike-text')){
             document.querySelector('.task-desc-' + getId[3]).classList.remove('strike-text');
             element.innerHTML = 'Check';
