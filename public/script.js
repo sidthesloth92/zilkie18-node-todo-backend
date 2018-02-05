@@ -4,13 +4,13 @@ var fragment = window.document.createDocumentFragment();
 
 window.onload = function () {
     init();
-    getTodos();
+    // getTodos();
 }
 //Retreive todoItems on load
 function getTodos() {
     xmlrequest('GET', 'listItem', "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
-}
+}   
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
@@ -73,7 +73,7 @@ var view = {
         newList.classList.add('list');
         var listText = document.createElement('div');
         listText.classList.add('list-text');
-        listText.textContent = todoItem.description;
+        listText.textContent = todoItem.desc;
         listText.dataset.id = 'list-text-' + id;
         newList.dataset.id = 'list-item-' + id;
         newList.appendChild(listText);

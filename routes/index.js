@@ -1,27 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
-var resultData;
 
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "ztech@123",
-  database : 'todo_list'
-});
-
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-  var sql = "select * from todo_data"
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-    else {
-     resultData = result;
-    // console.log(JSON.stringify(resultData));
-    }
-  });
-});
 
 
 //Mysql Connection
@@ -44,41 +24,30 @@ function createConnection() {
     password: "ztech@123",
     database: "todo_list"
   });
-
 }
 
+
+
 //POST request - To add todos
-<<<<<<< HEAD
-router.post('/listItem', function (req, res, next) {
+router.post('/list-item', function (req, res, next) {
   var getIdStatement = "select MAX(id) as id from todo_data";
   var con = createConnection();
   con.connect(function (err) {
     if (err) throw err;
-    console.log("Connected! man");
   });
   con.query(getIdStatement, function (err, result) {
     if (err) throw err;
     var id = result[0].id == null ? 1 : result[0].id + 1;
     var insertListStatement = "Insert into todo_data (id,description) values ('" + id + "','" + req.body.desc + "')";
     var listItem = new CreateListItem(id, req.body.desc);
+
     con.query(insertListStatement, function (err, result) {
       con.end();
       res.end(JSON.stringify(listItem));
     });
   });
-=======
-router.post('/list-item', function (req, res, next) {
-  var id = getId();
-  var listItem = new CreateListItem(id, req.body.desc);
-  toDoList.listItems.push(listItem);
-  res.end(JSON.stringify(listItem));
->>>>>>> 3888e395feefc008eabd646505e49c5f05cec932
 });
 
-function addListItem(err, result) {
-  var id = result[0].id;
-
-}
 
 //GET request - To retrieve todos
 router.get('/listItem', function (req, res, next) {
