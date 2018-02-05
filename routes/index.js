@@ -1,17 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
-//TODO Array 
-var toDoList = { 'listItems': []};
 
-//Function to generate ID
-function getId() {
-  if (toDoList.listItems.length == 0) {
-    return 1;
-  } else {
-    return (toDoList.listItems[(toDoList.listItems.length) - 1].id) + 1;
-  }
-}
+//Mysql Connection
+var mysql = require('mysql');
+
+
+
 
 //Constructor to add todo Items 
 function CreateListItem(id, desc) {
@@ -20,13 +15,40 @@ function CreateListItem(id, desc) {
   this.isChecked = false;
 }
 
+function createConnection() {
+  return mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "ztech@123",
+    database: "todo_list"
+  });
+
+}
+
 //POST request - To add todos
 router.post('/listItem', function (req, res, next) {
-  var id = getId();
-  var listItem = new CreateListItem(id, req.body.desc);
-  toDoList.listItems.push(listItem);
-  res.end(JSON.stringify(listItem));
+  var getIdStatement = "select MAX(id) as id from todo_data";
+  var con = createConnection();
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected! man");
+  });
+  con.query(getIdStatement, function (err, result) {
+    if (err) throw err;
+    var id = result[0].id == null ? 1 : result[0].id + 1;
+    var insertListStatement = "Insert into todo_data (id,description) values ('" + id + "','" + req.body.desc + "')";
+    var listItem = new CreateListItem(id, req.body.desc);
+    con.query(insertListStatement, function (err, result) {
+      con.end();
+      res.end(JSON.stringify(listItem));
+    });
+  });
 });
+
+function addListItem(err, result) {
+  var id = result[0].id;
+
+}
 
 //GET request - To retrieve todos
 router.get('/listItem', function (req, res, next) {
