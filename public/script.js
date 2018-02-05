@@ -12,7 +12,6 @@ function xmlrequest(type,url,content=null,func=null) {
         request.onreadystatechange = function() {
             if(request.readyState == 4&&request.status == 200) {
                 if(func!=null) {
-                    console.log(request.responseText);
                 func(request.responseText);
                 }      
             }
@@ -26,7 +25,7 @@ function xmlrequest(type,url,content=null,func=null) {
 
 function init() {
     $('#add-item-button').click(addList);
-    // $('#get-item-button').click(getList);
+    $('#get-item-button').click(getTodos);
     $('#to-do-list-items').click(function updateAndDelete1(event){
         updateAndDelete(event);
     });
@@ -56,7 +55,7 @@ var view = {
     },
     createStrikeButton: function (id) {
         var strikeButton = window.document.createElement('span');
-        strikeButton.textContent = 'Completed';
+        strikeButton.textContent = 'Check';
         strikeButton.classList.add('checked-button');
         strikeButton.classList.add('list-button');
         strikeButton.dataset.id="update-item-button-"+id;
@@ -82,18 +81,23 @@ function addTodosToPage(todos) {
     var toDo = JSON.parse(todos);
     var element = document.getElementById("to-do-list-items");
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < toDo.listItems.length; i++) {
+    if(toDo.listItems.length<=0) {
+        alert('The list is empty');
+    }
+    else {
+        for (var i = 0; i < toDo.listItems.length; i++) {
         var todoItem = toDo.listItems[i];
         fragment.appendChild(view.createUIItem(todoItem));
-    }
+        }
     element.insertBefore(fragment,element.childNodes[0]); 
 }
+}
 //Retreive todoItems 
-window.document.getElementById('get-item-button').addEventListener('click', function () {
-
+    function getTodos () {
     xmlrequest('GET','listItem',null,addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
-});
+    }
+
 
 
 function updateAndDelete(event) {
