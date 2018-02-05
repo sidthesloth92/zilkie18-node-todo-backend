@@ -41,22 +41,19 @@ router.get('/listItem', function (req, res, next) {
 });
 
 //PUT request - To Update Todos
-router.put('/checkListItem', function (req, res, next) {
+router.put('/updateListItem', function (req, res, next) {
   var id = req.query.id;
-  var index = toDoList.listItems.findIndex(function (item, i) {
-    return item.id == id;
-  });
-  toDoList.noOfItemsChecked--;
-  toDoList.listItems[index].ischecked = false;
-});
-
-router.put('/uncheckListItem', function (req, res, next) {
-  var id = req.query.id;
+  var status = req.query.status;
   var index = toDoList.listItems.findIndex(function (item) {
     return item.id == id;
   });
-  toDoList.noOfItemsChecked++;
-  toDoList.listItems[index].ischecked = true;
+  if(status === "check") {
+    toDoList.noOfItemsChecked++;
+    toDoList.listItems[index].ischecked = true;
+  } else if(status === "uncheck") {
+    toDoList.noOfItemsChecked--;
+    toDoList.listItems[index].ischecked = false;
+  }
 });
 
 //DELETE request - To delete Todos

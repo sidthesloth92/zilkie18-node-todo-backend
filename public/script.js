@@ -112,11 +112,11 @@ function updateAndDelete(event) {
         if(document.querySelector('div[data-id="list-text-' + getId[3]+'"]').classList.contains('line-through')){
             document.querySelector('div[data-id="list-text-' + getId[3]+'"]').classList.remove('line-through');
             element.innerHTML = 'Check';
-            xmlrequest("put", "checkListItem?id="+getId[3], null, null);
+            xmlrequest("put", "updateListItem?status=uncheck&id="+getId[3], null, null);
         } else {
             document.querySelector('div[data-id="list-text-' + getId[3]+'"]').classList.add('line-through');
             element.innerHTML = 'Uncheck';
-            xmlrequest("put", "uncheckListItem?id="+getId[3], null, null);
+            xmlrequest("put", "updateListItem?status=check&id="+getId[3], null, null);
         }
     }
 }
