@@ -16,7 +16,7 @@ function createConnection() {
   return mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "ztech@123",
+    password: "Gayathiri2728",
     database: "todo_list"
   });
 }
@@ -85,11 +85,17 @@ router.put('/list-item', function (req, res, next) {
 //DELETE request - To delete Todos
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var mysql_query = "delete from todo_data where id=" + id;
-  con.query(mysql_query, function (err, result) {
-    if (err) throw err;
-    console.log("Result: " + result);
+  var con = createConnection();
+  con.connect(function (err) {
+    if (err) throw new Error("Connection Failed");
+    var delete_query = "delete from todo_data where id=" + id;
+    con.query(delete_query, function (err, result) {
+      if (err) throw new Error("Query Failed");
+      
+      con.end();
+    });
   });
+  
 
 });
 
