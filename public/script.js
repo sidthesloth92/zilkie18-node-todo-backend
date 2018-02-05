@@ -68,7 +68,9 @@ function updateAndDelete(event) {
     //raxir and gayathri code 
 }
 
-function createItem(id) {
+function createItem(json) {
+    var toDoList = JSON.parse(json);
+    var id = toDoList.listItems[0].id;
     var text = $('#add-list-item').val();
     var element = document.getElementById("to-do-list-items");
     var fragment = document.createDocumentFragment();
@@ -84,8 +86,8 @@ function createItem(id) {
     checkedButton.classList.add('list-button');
     listText.textContent=text;
     var currentListId = 'list-item-id-'+id;
-    var currentCheckId = 'update-item-button-id-'+id;
-    var currentDeleteId = 'delete-item-button-id-'+id;
+    var currentCheckId = 'update-item-button-'+id;
+    var currentDeleteId = 'delete-item-button-'+id;
     newList.dataset.id=id;
     checkedButton.dataset.id=currentCheckId;
     deleteButton.dataset.id=currentDeleteId;

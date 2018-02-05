@@ -36,9 +36,11 @@ router.post('/listItem',function(req,res,next) {
   //Naveen's code 
   
     var id = getId();
+    var duplicateToDoList= {'listItems':[],'noOfItemsChecked':0};
     var listItem = new createListItem(id,req.body.desc);
     toDoList.listItems.push(listItem);
-    res.end(""+id);
+    duplicateToDoList.listItems.push(listItem);
+    res.end(JSON.stringify(duplicateToDoList));
 });
 
 router.get('/listItem',function(req,res,next) {
