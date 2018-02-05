@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 //TODO Array 
-var toDoList = { 'listItems': [] };
+var toDoList = { 'listItems': []};
 
 //Function to generate ID
 function getId() {
@@ -14,20 +14,18 @@ function getId() {
 }
 
 //Constructor to add todo Items 
-function createListItem(id, desc) {
+function CreateListItem(id, desc) {
   this.id = id;
   this.desc = desc;
-  this.ischecked = false;
+  this.isChecked = false;
 }
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
   var id = getId();
-  var duplicateToDoList = { 'listItems': [] };
-  var listItem = new createListItem(id, req.body.desc);
+  var listItem = new CreateListItem(id, req.body.desc);
   toDoList.listItems.push(listItem);
-  duplicateToDoList.listItems.push(listItem);
-  res.end(JSON.stringify(duplicateToDoList));
+  res.end(JSON.stringify(listItem));
 });
 
 //GET request - To retrieve todos
@@ -46,17 +44,17 @@ router.put('/list-item', function (req, res, next) {
   var index = toDoList.listItems.findIndex(function (item) {
     return item.id == id;
   });
-  if(toDoList.listItems[index].ischecked == false) {
-    toDoList.listItems[index].ischecked = true;
+  if(toDoList.listItems[index].isChecked == false) {
+    toDoList.listItems[index].isChecked = true;
   } else {
-    toDoList.listItems[index].ischecked = false;
+    toDoList.listItems[index].isChecked = false;
   }
   console.log(toDoList);
 });
 
 //DELETE request - To delete Todos
-router.delete('/listItem', function (req, res, next) {
-  var id = req.query.id;
+router.delete('/list-item/:id', function (req, res, next) {
+  var id = req.params.id;
   var list_array = toDoList.listItems;
   var index = list_array.findIndex(function (element) {
     return element.id == id;

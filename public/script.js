@@ -6,13 +6,13 @@ window.onload = function () {
     init();
 }
 
-function xmlrequest(type, url, content = null, func = null) {
+function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
     var request = new window.XMLHttpRequest();
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
-            if (func != null) {
-                func(request.responseText);
+            if (callback != undefined) {
+                callback(request.responseText);
             }
         }
     };
@@ -63,6 +63,7 @@ var view = {
     },
     createUIItem: function (todoItem) {
         var id = todoItem.id;
+        console.log(id);
         var newList = document.createElement('li');
         newList.classList.add('list');
         var listText = document.createElement('div');
@@ -78,10 +79,14 @@ var view = {
 };
 //Adding todos to page after retrieving
 function addTodosToPage(todos) {
+    console.log(todos);
     var toDo = JSON.parse(todos);
     var element = document.getElementById("to-do-list-items");
     var fragment = document.createDocumentFragment();
-    if (toDo.listItems.length <= 0) {
+    if (toDo.id > 0) {
+        fragment.appendChild(view.createUIItem(toDo));
+    }
+    else if (toDo.listItems.length <= 0) {
         alert('The list is empty');
     }
     else {
@@ -89,12 +94,13 @@ function addTodosToPage(todos) {
             var todoItem = toDo.listItems[i];
             fragment.appendChild(view.createUIItem(todoItem));
         }
-        element.insertBefore(fragment, element.childNodes[0]);
+
     }
+    element.insertBefore(fragment, element.childNodes[0]);
 }
 //Retreive todoItems 
 function getTodos() {
-    xmlrequest('GET', 'list-item', null, addTodosToPage);
+    xmlrequest('GET', 'list-item', "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
 }
 
@@ -106,7 +112,7 @@ function updateAndDelete(event) {
     if (getId[0] == 'delete') {
         if (window.confirm('Do you want to delete the selected list item?') == true) {
             window.document.querySelector('li[data-id="list-item-' + getId[3] + '"]').remove();
-            xmlrequest("delete", "listItem?id=" + getId[3], null, null);
+            xmlrequest("delete", "list-item/" + getId[3], null, null);
         }
     } else if (getId[0] == 'update') {
         if (document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.contains('line-through')) {
