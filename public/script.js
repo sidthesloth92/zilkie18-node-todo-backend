@@ -55,7 +55,7 @@ var view = {
     },
     createStrikeButton: function (id) {
         var strikeButton = window.document.createElement('span');
-        strikeButton.textContent = 'Check';
+        strikeButton.textContent = 'check';
         strikeButton.classList.add('checked-button');
         strikeButton.classList.add('list-button');
         strikeButton.dataset.id="update-item-button-"+id;
