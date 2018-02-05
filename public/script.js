@@ -99,7 +99,7 @@ function addTodosToPage(todos) {
         fragment.appendChild(view.createUIItem(toDo));
     }
     else if (toDo.length <= 0) {
-        alert('The list is empty');
+//        alert('The list is empty');
     }
     else {
         for (var i = 0; i < toDo.length; i++) {
