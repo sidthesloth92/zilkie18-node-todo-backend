@@ -13,7 +13,7 @@ var mysql = require('mysql');
 //Constructor to add todo Items 
 function CreateListItem(id, desc) {
   this.id = id;
-  this.desc = desc;
+  this.description = desc;
   this.isChecked = false;
 }
 
@@ -66,7 +66,7 @@ router.put('/list-item', function (req, res, next) {
   var index = toDoList.listItems.findIndex(function (item) {
     return item.id == id;
   });
-  if(toDoList.listItems[index].isChecked == false) {
+  if (toDoList.listItems[index].isChecked == false) {
     toDoList.listItems[index].isChecked = true;
   } else {
     toDoList.listItems[index].isChecked = false;
@@ -77,12 +77,12 @@ router.put('/list-item', function (req, res, next) {
 //DELETE request - To delete Todos
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var mysql_query="delete from todo_data where id="+id;
+  var mysql_query = "delete from todo_data where id=" + id;
   con.query(mysql_query, function (err, result) {
     if (err) throw err;
-    console.log("Result: " +result);
+    console.log("Result: " + result);
   });
-  
+
 });
 
 module.exports = router;
