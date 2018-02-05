@@ -1,8 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var mysql = require('mysql');
+
+function createConnection() {
+  return mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "zilkeradmin",
+    database: "todo_list"
+  });
+}
 
 //TODO Array 
-var toDoList = { 'listItems': []};
+var toDoList = { 'listItems': [] };
 
 //Function to generate ID
 function getId() {
@@ -41,15 +51,30 @@ router.get('/list-item', function (req, res, next) {
 //PUT request - To Update Todos
 router.put('/list-item', function (req, res, next) {
   var id = req.body.id;
-  var index = toDoList.listItems.findIndex(function (item) {
-    return item.id == id;
+  var con = createConnection();
+  var sql = "SELECT is_checked from todo_data where id = " + id;
+  con.connect(function (err) {
+    if (err) throw err;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      con.end();
+      con = createConnection();
+      if (result[0].is_checked == 0) {
+        sql = "UPDATE todo_data SET is_checked = 1 WHERE id = " + id;
+        console.log('check');
+      } else {
+        sql = "UPDATE todo_data SET is_checked = 0 WHERE id = " + id;
+        console.log('uncheck');
+      }
+      con.connect(function (err) {
+        if (err) throw err;
+        con.query(sql, function (err, result) {
+          if (err) throw err;
+          con.end();
+        });
+      });
+    });
   });
-  if(toDoList.listItems[index].isChecked == false) {
-    toDoList.listItems[index].isChecked = true;
-  } else {
-    toDoList.listItems[index].isChecked = false;
-  }
-  console.log(toDoList);
 });
 
 //DELETE request - To delete Todos
