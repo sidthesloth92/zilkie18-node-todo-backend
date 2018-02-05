@@ -10,7 +10,7 @@ window.onload = function () {
 function getTodos() {
     xmlrequest('GET', 'list-item', "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
-}   
+}
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
@@ -77,7 +77,14 @@ var view = {
         listText.dataset.id = 'list-text-' + id;
         newList.dataset.id = 'list-item-' + id;
         newList.appendChild(listText);
-        newList.appendChild(view.createStrikeButton(id));
+        var checkStrikeButton = view.createStrikeButton(id);
+
+        if(todoItem.is_checked == 1)
+        {
+            listText.classList.add("line-through");
+            checkStrikeButton.innerHTML="Uncheck";
+        }
+        newList.appendChild(checkStrikeButton);
         newList.appendChild(view.createDelButton(id));
         return newList;
     }
@@ -120,7 +127,7 @@ function updateAndDelete(event) {
             document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.add('line-through');
             element.innerHTML = 'Uncheck';
         }
-        xmlrequest("put", "list-item","id=" + getId[3], null);
+        xmlrequest("put", "list-item", "id=" + getId[3], null);
     }
 }
 

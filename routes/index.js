@@ -16,7 +16,7 @@ function createConnection() {
   return mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "Gayathiri2728",
+    password: "ztech@123",
     database: "todo_list"
   });
 }
