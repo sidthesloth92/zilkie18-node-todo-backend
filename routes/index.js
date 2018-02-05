@@ -7,24 +7,12 @@ var con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "ztech@123",
-  database : 'todo_list'
+  database: 'todo_list'
 });
 
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-  var sql = "select * from todo_data"
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-    else {
-     resultData = result;
-    // console.log(JSON.stringify(resultData));
-    }
-  });
-});
 
 //TODO Array 
-var toDoList = { 'listItems': []};
+var toDoList = { 'listItems': [] };
 
 //Function to generate ID
 function getId() {
@@ -52,13 +40,23 @@ router.post('/list-item', function (req, res, next) {
 
 //GET request - To retrieve todos
 router.get('/listItem', function (req, res, next) {
-  if (resultData == null) {
-    res.send("Nothing to Display");
-  }
-  else {
-    console.log(JSON.stringify(resultData));
-    res.send(resultData);
-  }
+  con.connect(function (err) {
+    if (err) throw err;
+  });
+  var sql = "select * from todo_data"
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    else {
+      resultData = result;
+      if (resultData == null) {
+        res.send("Nothing to Display");
+      }
+      else {
+        console.log(JSON.stringify(resultData));
+        res.send(resultData);
+      }
+    }
+  });
 });
 
 //PUT request - To Update Todos
@@ -67,7 +65,7 @@ router.put('/list-item', function (req, res, next) {
   var index = toDoList.listItems.findIndex(function (item) {
     return item.id == id;
   });
-  if(toDoList.listItems[index].isChecked == false) {
+  if (toDoList.listItems[index].isChecked == false) {
     toDoList.listItems[index].isChecked = true;
   } else {
     toDoList.listItems[index].isChecked = false;
@@ -78,12 +76,12 @@ router.put('/list-item', function (req, res, next) {
 //DELETE request - To delete Todos
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var mysql_query="delete from todo_data where id="+id;
+  var mysql_query = "delete from todo_data where id=" + id;
   con.query(mysql_query, function (err, result) {
     if (err) throw err;
-    console.log("Result: " +result);
+    console.log("Result: " + result);
   });
-  
+
 });
 
 module.exports = router;
