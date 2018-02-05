@@ -1,5 +1,27 @@
 var express = require('express');
 var router = express.Router();
+var mysql = require('mysql');
+var resultData;
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "ztech@123",
+  database : 'todo_list'
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+  var sql = "select * from todo_data"
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    else {
+     resultData = result;
+    // console.log(JSON.stringify(resultData));
+    }
+  });
+});
 
 //TODO Array 
 var toDoList = { 'listItems': []};
@@ -30,11 +52,12 @@ router.post('/listItem', function (req, res, next) {
 
 //GET request - To retrieve todos
 router.get('/listItem', function (req, res, next) {
-  if (toDoList == null) {
+  if (resultData == null) {
     res.send("Nothing to Display");
   }
   else {
-    res.send(toDoList);
+    console.log(JSON.stringify(resultData));
+    res.send(resultData);
   }
 });
 
