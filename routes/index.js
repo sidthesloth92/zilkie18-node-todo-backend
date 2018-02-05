@@ -1,14 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
-
-
+var constants = require('./constants');
 
 //Mysql Connection
 var mysql = require('mysql');
-
-
-
 
 //Constructor to add todo Items 
 function CreateListItem(id, desc) {
@@ -19,14 +15,12 @@ function CreateListItem(id, desc) {
 
 function createConnection() {
   return mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "ztech@123",
-    database: "todo_list"
+    host: constants.HOST,
+    user: constants.USER,
+    password: constants.PASSWORD,
+    database: constants.DATABASE
   });
 }
-
-
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
@@ -61,7 +55,7 @@ router.get('/list-item', function (req, res, next) {
       else {
         resultData = result;
         if (resultData == null) {
-          res.send("Nothing to Display");
+          res.send(constants.DISPLAYNONE);
         }
         else {
           console.log(JSON.stringify(resultData));
