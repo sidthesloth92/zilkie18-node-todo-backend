@@ -8,7 +8,7 @@ window.onload = function () {
 }
 //Retreive todoItems on load
 function getTodos() {
-    xmlrequest('GET', 'listItem', "", addTodosToPage);
+    xmlrequest('GET', 'list-item', "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
 }
 

@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
-var resultData;
 
 var con = mysql.createConnection({
   host: "localhost",
@@ -39,7 +38,8 @@ router.post('/list-item', function (req, res, next) {
 });
 
 //GET request - To retrieve todos
-router.get('/listItem', function (req, res, next) {
+router.get('/list-item', function (req, res, next) {
+  var resultData;
   con.connect(function (err) {
     if (err) throw err;
   });
@@ -56,6 +56,7 @@ router.get('/listItem', function (req, res, next) {
         res.send(resultData);
       }
     }
+    con.end();
   });
 });
 
