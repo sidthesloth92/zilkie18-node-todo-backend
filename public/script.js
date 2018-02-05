@@ -77,7 +77,14 @@ var view = {
         listText.dataset.id = 'list-text-' + id;
         newList.dataset.id = 'list-item-' + id;
         newList.appendChild(listText);
-        newList.appendChild(view.createStrikeButton(id));
+        var checkStrikeButton = view.createStrikeButton(id);
+
+        if(todoItem.is_checked == 1)
+        {
+            listText.classList.add("line-through");
+            checkStrikeButton.innerHTML="Uncheck";
+        }
+        newList.appendChild(checkStrikeButton);
         newList.appendChild(view.createDelButton(id));
         return newList;
     }
@@ -92,7 +99,7 @@ function addTodosToPage(todos) {
         fragment.appendChild(view.createUIItem(toDo));
     }
     else if (toDo.length <= 0) {
-        alert('The list is empty');
+//        alert('The list is empty');
     }
     else {
         for (var i = 0; i < toDo.length; i++) {
