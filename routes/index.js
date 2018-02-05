@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 //TODO Array 
-var toDoList = { 'listItems': [], 'noOfItemsChecked': 0 };
+var toDoList = { 'listItems': [] };
 
 //Function to generate ID
 function getId() {
@@ -21,9 +21,9 @@ function createListItem(id, desc) {
 }
 
 //POST request - To add todos
-router.post('/listItem', function (req, res, next) {
+router.post('/list-item', function (req, res, next) {
   var id = getId();
-  var duplicateToDoList = { 'listItems': [], 'noOfItemsChecked': 0 };
+  var duplicateToDoList = { 'listItems': [] };
   var listItem = new createListItem(id, req.body.desc);
   toDoList.listItems.push(listItem);
   duplicateToDoList.listItems.push(listItem);
@@ -31,7 +31,7 @@ router.post('/listItem', function (req, res, next) {
 });
 
 //GET request - To retrieve todos
-router.get('/listItem', function (req, res, next) {
+router.get('/list-item', function (req, res, next) {
   if (toDoList == null) {
     res.send("Nothing to Display");
   }
@@ -41,19 +41,17 @@ router.get('/listItem', function (req, res, next) {
 });
 
 //PUT request - To Update Todos
-router.put('/updateListItem', function (req, res, next) {
-  var id = req.query.id;
-  var status = req.query.status;
+router.put('/list-item', function (req, res, next) {
+  var id = req.body.id;
   var index = toDoList.listItems.findIndex(function (item) {
     return item.id == id;
   });
-  if(status === "check") {
-    toDoList.noOfItemsChecked++;
+  if(toDoList.listItems[index].ischecked == false) {
     toDoList.listItems[index].ischecked = true;
-  } else if(status === "uncheck") {
-    toDoList.noOfItemsChecked--;
+  } else {
     toDoList.listItems[index].ischecked = false;
   }
+  console.log(toDoList);
 });
 
 //DELETE request - To delete Todos
