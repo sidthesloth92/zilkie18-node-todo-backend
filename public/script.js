@@ -4,6 +4,12 @@ var fragment = window.document.createDocumentFragment();
 
 window.onload = function () {
     init();
+    getTodos();
+}
+//Retreive todoItems on load
+function getTodos() {
+    xmlrequest('GET', 'listItem', "", addTodosToPage);
+    document.getElementById('get-item-button').classList.add("dont-display");
 }
 
 function xmlrequest(type, url, content, callback) {
@@ -12,6 +18,7 @@ function xmlrequest(type, url, content, callback) {
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             if (callback != undefined) {
+                console.log(request.responseText);
                 callback(request.responseText);
             }
         }
@@ -25,11 +32,9 @@ function xmlrequest(type, url, content, callback) {
 
 function init() {
     $('#add-item-button').click(addList);
-    $('#get-item-button').click(getTodos);
     $('#to-do-list-items').click(function updateAndDelete1(event) {
         updateAndDelete(event);
     });
-
 }
 
 function addList() {
@@ -37,7 +42,7 @@ function addList() {
     if (text.length == 0) {
         alert('Enter the task in the text field');
     } else {
-        xmlrequest("post", "listItem", "desc=" + text, addTodosToPage);
+        xmlrequest("post", "list-item", "desc=" + text, addTodosToPage);
     }
 }
 
@@ -68,7 +73,7 @@ var view = {
         newList.classList.add('list');
         var listText = document.createElement('div');
         listText.classList.add('list-text');
-        listText.textContent = todoItem.desc;
+        listText.textContent = todoItem.description;
         listText.dataset.id = 'list-text-' + id;
         newList.dataset.id = 'list-item-' + id;
         newList.appendChild(listText);
@@ -86,25 +91,18 @@ function addTodosToPage(todos) {
     if (toDo.id > 0) {
         fragment.appendChild(view.createUIItem(toDo));
     }
-    else if (toDo.listItems.length <= 0) {
+    else if (toDo.length <= 0) {
         alert('The list is empty');
     }
     else {
-        for (var i = 0; i < toDo.listItems.length; i++) {
-            var todoItem = toDo.listItems[i];
+        for (var i = 0; i < toDo.length; i++) {
+            var todoItem = toDo[i];
             fragment.appendChild(view.createUIItem(todoItem));
         }
 
     }
     element.insertBefore(fragment, element.childNodes[0]);
 }
-//Retreive todoItems 
-function getTodos() {
-    xmlrequest('GET', 'listItem', "", addTodosToPage);
-    document.getElementById('get-item-button').classList.add("dont-display");
-}
-
-
 
 function updateAndDelete(event) {
     var element = event.target;
@@ -112,18 +110,17 @@ function updateAndDelete(event) {
     if (getId[0] == 'delete') {
         if (window.confirm('Do you want to delete the selected list item?') == true) {
             window.document.querySelector('li[data-id="list-item-' + getId[3] + '"]').remove();
-            xmlrequest("delete", "listItem/" + getId[3], null, null);
+            xmlrequest("delete", "list-item/" + getId[3], null, null);
         }
     } else if (getId[0] == 'update') {
         if (document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.contains('line-through')) {
             document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.remove('line-through');
             element.innerHTML = 'Check';
-            xmlrequest("put", "updateListItem?status=uncheck&id=" + getId[3], null, null);
         } else {
             document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.add('line-through');
             element.innerHTML = 'Uncheck';
-            xmlrequest("put", "updateListItem?status=check&id=" + getId[3], null, null);
         }
+        xmlrequest("put", "list-item","id=" + getId[3], null);
     }
 }
 

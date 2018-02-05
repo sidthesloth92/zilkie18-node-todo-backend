@@ -1,5 +1,27 @@
 var express = require('express');
 var router = express.Router();
+var mysql = require('mysql');
+var resultData;
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "ztech@123",
+  database : 'todo_list'
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+  var sql = "select * from todo_data"
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    else {
+     resultData = result;
+    // console.log(JSON.stringify(resultData));
+    }
+  });
+});
 
 
 //Mysql Connection
@@ -26,6 +48,7 @@ function createConnection() {
 }
 
 //POST request - To add todos
+<<<<<<< HEAD
 router.post('/listItem', function (req, res, next) {
   var getIdStatement = "select MAX(id) as id from todo_data";
   var con = createConnection();
@@ -43,6 +66,13 @@ router.post('/listItem', function (req, res, next) {
       res.end(JSON.stringify(listItem));
     });
   });
+=======
+router.post('/list-item', function (req, res, next) {
+  var id = getId();
+  var listItem = new CreateListItem(id, req.body.desc);
+  toDoList.listItems.push(listItem);
+  res.end(JSON.stringify(listItem));
+>>>>>>> 3888e395feefc008eabd646505e49c5f05cec932
 });
 
 function addListItem(err, result) {
@@ -52,41 +82,38 @@ function addListItem(err, result) {
 
 //GET request - To retrieve todos
 router.get('/listItem', function (req, res, next) {
-  if (toDoList == null) {
+  if (resultData == null) {
     res.send("Nothing to Display");
   }
   else {
-    res.send(toDoList);
+    console.log(JSON.stringify(resultData));
+    res.send(resultData);
   }
 });
 
 //PUT request - To Update Todos
-router.put('/updateListItem', function (req, res, next) {
-  var id = req.query.id;
-  var status = req.query.status;
+router.put('/list-item', function (req, res, next) {
+  var id = req.body.id;
   var index = toDoList.listItems.findIndex(function (item) {
     return item.id == id;
   });
-  if (status === "check") {
-    toDoList.noOfItemsChecked++;
-    toDoList.listItems[index].ischecked = true;
-  } else if (status === "uncheck") {
-    toDoList.noOfItemsChecked--;
-    toDoList.listItems[index].ischecked = false;
+  if(toDoList.listItems[index].isChecked == false) {
+    toDoList.listItems[index].isChecked = true;
+  } else {
+    toDoList.listItems[index].isChecked = false;
   }
+  console.log(toDoList);
 });
 
 //DELETE request - To delete Todos
-router.delete('/listItem/:id', function (req, res, next) {
+router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var list_array = toDoList.listItems;
-  var index = list_array.findIndex(function (element) {
-    return element.id == id;
+  var mysql_query="delete from todo_data where id="+id;
+  con.query(mysql_query, function (err, result) {
+    if (err) throw err;
+    console.log("Result: " +result);
   });
-  if (list_array[index].ischecked === true) {
-    toDoList.noOfItemsChecked--;
-  }
-  toDoList.listItems.splice(index, 1);
+  
 });
 
 module.exports = router;
