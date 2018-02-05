@@ -1,8 +1,14 @@
 var express = require('express');
 var router = express.Router();
+var mysql = require('mysql');
+
+
 
 //Mysql Connection
 var mysql = require('mysql');
+
+
+
 
 //Constructor to add todo Items 
 function CreateListItem(id, desc) {
@@ -19,6 +25,8 @@ function createConnection() {
     database: "todo_list"
   });
 }
+
+
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
@@ -90,6 +98,12 @@ router.put('/list-item', function (req, res, next) {
       });
     });
   });
+  if (toDoList.listItems[index].isChecked == false) {
+    toDoList.listItems[index].isChecked = true;
+  } else {
+    toDoList.listItems[index].isChecked = false;
+  }
+  console.log(toDoList);
 });
 
 //DELETE request - To delete Todos
@@ -104,8 +118,8 @@ router.delete('/list-item/:id', function (req, res, next) {
       con.end();
     });
   });
-  
 
 });
 
 module.exports = router;
+ 
