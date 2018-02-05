@@ -4,7 +4,13 @@ var fragment = window.document.createDocumentFragment();
 
 window.onload = function () {
     init();
+    getTodos();
 }
+//Retreive todoItems on load
+function getTodos() {
+    xmlrequest('GET', 'list-item', "", addTodosToPage);
+    document.getElementById('get-item-button').classList.add("dont-display");
+}   
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
@@ -12,6 +18,7 @@ function xmlrequest(type, url, content, callback) {
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             if (callback != undefined) {
+                console.log(request.responseText);
                 callback(request.responseText);
             }
         }
@@ -25,11 +32,9 @@ function xmlrequest(type, url, content, callback) {
 
 function init() {
     $('#add-item-button').click(addList);
-    $('#get-item-button').click(getTodos);
     $('#to-do-list-items').click(function updateAndDelete1(event) {
         updateAndDelete(event);
     });
-
 }
 
 function addList() {
@@ -68,7 +73,7 @@ var view = {
         newList.classList.add('list');
         var listText = document.createElement('div');
         listText.classList.add('list-text');
-        listText.textContent = todoItem.desc;
+        listText.textContent = todoItem.description;
         listText.dataset.id = 'list-text-' + id;
         newList.dataset.id = 'list-item-' + id;
         newList.appendChild(listText);
@@ -86,25 +91,18 @@ function addTodosToPage(todos) {
     if (toDo.id > 0) {
         fragment.appendChild(view.createUIItem(toDo));
     }
-    else if (toDo.listItems.length <= 0) {
+    else if (toDo.length <= 0) {
         alert('The list is empty');
     }
     else {
-        for (var i = 0; i < toDo.listItems.length; i++) {
-            var todoItem = toDo.listItems[i];
+        for (var i = 0; i < toDo.length; i++) {
+            var todoItem = toDo[i];
             fragment.appendChild(view.createUIItem(todoItem));
         }
 
     }
     element.insertBefore(fragment, element.childNodes[0]);
 }
-//Retreive todoItems 
-function getTodos() {
-    xmlrequest('GET', 'list-item', "", addTodosToPage);
-    document.getElementById('get-item-button').classList.add("dont-display");
-}
-
-
 
 function updateAndDelete(event) {
     var element = event.target;

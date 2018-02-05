@@ -1,6 +1,15 @@
 var express = require('express');
 var router = express.Router();
+
+//Mysql Connection
 var mysql = require('mysql');
+
+//Constructor to add todo Items 
+function CreateListItem(id, desc) {
+  this.id = id;
+  this.description = desc;
+  this.isChecked = false;
+}
 
 function createConnection() {
   return mysql.createConnection({
@@ -11,41 +20,51 @@ function createConnection() {
   });
 }
 
-//TODO Array 
-var toDoList = { 'listItems': [] };
-
-//Function to generate ID
-function getId() {
-  if (toDoList.listItems.length == 0) {
-    return 1;
-  } else {
-    return (toDoList.listItems[(toDoList.listItems.length) - 1].id) + 1;
-  }
-}
-
-//Constructor to add todo Items 
-function CreateListItem(id, desc) {
-  this.id = id;
-  this.desc = desc;
-  this.isChecked = false;
-}
-
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
-  var id = getId();
-  var listItem = new CreateListItem(id, req.body.desc);
-  toDoList.listItems.push(listItem);
-  res.end(JSON.stringify(listItem));
+  var getIdStatement = "select MAX(id) as id from todo_data";
+  var con = createConnection();
+  con.connect(function (err) {
+    if (err) throw err;
+  });
+  con.query(getIdStatement, function (err, result) {
+    if (err) throw err;
+    var id = result[0].id == null ? 1 : result[0].id + 1;
+    var insertListStatement = "Insert into todo_data (id,description) values ('" + id + "','" + req.body.desc + "')";
+    var listItem = new CreateListItem(id, req.body.desc);
+
+    con.query(insertListStatement, function (err, result) {
+      con.end();
+      res.end(JSON.stringify(listItem));
+    });
+  });
 });
+
 
 //GET request - To retrieve todos
 router.get('/list-item', function (req, res, next) {
-  if (toDoList == null) {
-    res.send("Nothing to Display");
-  }
-  else {
-    res.send(toDoList);
-  }
+  var resultData;
+  var con = createConnection();
+  console.log("in");
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log("in");
+    var sql = "select * from todo_data"
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      else {
+        resultData = result;
+        if (resultData == null) {
+          res.send("Nothing to Display");
+        }
+        else {
+          console.log(JSON.stringify(resultData));
+          res.send(resultData);
+        }
+      }
+      con.end();
+    });
+  });
 });
 
 //PUT request - To Update Todos
@@ -54,24 +73,24 @@ router.put('/list-item', function (req, res, next) {
   var con = createConnection();
   var sql = "SELECT is_checked from todo_data where id = " + id;
   con.connect(function (err) {
+    if (err) throw err; 
+  });
+  con.query(sql, function (err, result) {
     if (err) throw err;
-    con.query(sql, function (err, result) {
+    con.end();
+    con = createConnection();
+    if (result[0].is_checked == 0) {
+      sql = "UPDATE todo_data SET is_checked = 1 WHERE id = " + id;
+      console.log('check');
+    } else {
+      sql = "UPDATE todo_data SET is_checked = 0 WHERE id = " + id;
+      console.log('uncheck');
+    }
+    con.connect(function (err) {
       if (err) throw err;
-      con.end();
-      con = createConnection();
-      if (result[0].is_checked == 0) {
-        sql = "UPDATE todo_data SET is_checked = 1 WHERE id = " + id;
-        console.log('check');
-      } else {
-        sql = "UPDATE todo_data SET is_checked = 0 WHERE id = " + id;
-        console.log('uncheck');
-      }
-      con.connect(function (err) {
+      con.query(sql, function (err, result) {
         if (err) throw err;
-        con.query(sql, function (err, result) {
-          if (err) throw err;
-          con.end();
-        });
+        con.end();
       });
     });
   });
@@ -80,14 +99,18 @@ router.put('/list-item', function (req, res, next) {
 //DELETE request - To delete Todos
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var list_array = toDoList.listItems;
-  var index = list_array.findIndex(function (element) {
-    return element.id == id;
+  var con = createConnection();
+  con.connect(function (err) {
+    if (err) throw new Error("Connection Failed");
+    var delete_query = "delete from todo_data where id=" + id;
+    con.query(delete_query, function (err, result) {
+      if (err) throw new Error("Query Failed");
+      
+      con.end();
+    });
   });
-  if (list_array[index].ischecked === true) {
-    toDoList.noOfItemsChecked--;
-  }
-  toDoList.listItems.splice(index, 1);
+  
+
 });
 
 module.exports = router;
