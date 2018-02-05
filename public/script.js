@@ -10,7 +10,7 @@ window.onload = function () {
 function getTodos() {
     xmlrequest('GET', 'list-item', "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
-}
+}   
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
