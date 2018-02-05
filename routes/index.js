@@ -78,14 +78,12 @@ router.put('/list-item', function (req, res, next) {
 //DELETE request - To delete Todos
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var list_array = toDoList.listItems;
-  var index = list_array.findIndex(function (element) {
-    return element.id == id;
+  var mysql_query="delete from todo_data where id="+id;
+  con.query(mysql_query, function (err, result) {
+    if (err) throw err;
+    console.log("Result: " +result);
   });
-  if (list_array[index].ischecked === true) {
-    toDoList.noOfItemsChecked--;
-  }
-  toDoList.listItems.splice(index, 1);
+  
 });
 
 module.exports = router;
