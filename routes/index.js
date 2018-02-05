@@ -73,7 +73,7 @@ router.put('/list-item', function (req, res, next) {
   var con = createConnection();
   var sql = "SELECT is_checked from todo_data where id = " + id;
   con.connect(function (err) {
-    if (err) throw err; 
+    if (err) throw err;
   });
   con.query(sql, function (err, result) {
     if (err) throw err;
@@ -102,7 +102,7 @@ router.delete('/list-item/:id', function (req, res, next) {
     if (err) throw new Error("Connection Failed");
     var delete_query = "delete from todo_data where id=" + id;
     con.query(delete_query, function (err, result) {
-      if (err) throw new Error("Query Failed");    
+      if (err) throw new Error("Query Failed");
       con.end();
     });
   });
