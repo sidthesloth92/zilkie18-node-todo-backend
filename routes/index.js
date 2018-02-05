@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var listItem;
-//Mysql Connection
 var mysql = require('mysql');
+var queries = require('./queries');
+var dbconfig = require('./dbconfig');
+var errors = require('./errors');
+var mysql = require('mysql');
+var listItem;
 
 //Constructor to add todo Items 
 function CreateListItem(id, desc) {
@@ -11,47 +14,41 @@ function CreateListItem(id, desc) {
   this.isChecked = false;
 }
 
-function createConnection() {
-  return mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "ztech@123",
-    database: "todo_list"
-  });
-}
-
-
-function executeQuery(statement,callback,request,response) {
-  var con = createConnection();
+function executeQuery(statement, queryParameters, callback, request, response) {
+  var con = dbconfig.getConnection();
   con.connect(function (err) {
     if (err) throw err;
-    con.query(statement, function (err, result) {
-      if (err) throw err;
-      if(callback!=undefined) {
-      callback(result,request,response);
-      con.end();
-      }
-      });
+      con.query(statement, queryParameters, function (err, result) {
+        if (err) throw err;
+        if (callback != undefined) {
+          callback(result, request, response);
+           con.end();
+        }
+      });    
   });
 }
+//POST request - To add todos
+router.post('/list-item', function (req, res, next) {
+  var getIdStatement = queries.POSTID;
+  executeQuery(getIdStatement, null, insertElement, req, res);
+});
 
-function postResponse(result,req,res) {
+function insertElement(result, req, res) {
+  var id = result[0].id == null ? 1 : result[0].id + 1;
+  var insertListStatement = queries.INSERTQUERY;
+  executeQuery(insertListStatement, [id, req.body.desc], postResponse, req, res);
+  listItem = new CreateListItem(id, req.body.desc);
+}
+
+function postResponse(result, req, res) {
   console.log(result);
   res.end(JSON.stringify(listItem));
 }
 
-function insertElement(result,req,res) {
-  var id = result[0].id == null ? 1 : result[0].id + 1;
-  var insertListStatement = "Insert into todo_data (id,description) values ('" + id + "','" + req.body.desc + "')";
-  executeQuery(insertListStatement,postResponse,req,res);
- listItem = new CreateListItem(id, req.body.desc);
-}
 
-//POST request - To add todos
-router.post('/list-item', function (req, res, next) {
-  var getIdStatement = "select MAX(id) as id from todo_data";
-  executeQuery(getIdStatement,insertElement,req,res);
-});
+
+
+
 
 
 // //GET request - To retrieve todos
