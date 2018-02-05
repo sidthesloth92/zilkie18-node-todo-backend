@@ -26,29 +26,25 @@ router.post('/list-item', function (req, res, next) {
   var con = createConnection();
   con.connect(function (err) {
     if (err) throw err;
-  });
-  con.query(getIdStatement, function (err, result) {
-    if (err) throw err;
-    var id = result[0].id == null ? 1 : result[0].id + 1;
-    var insertListStatement = "Insert into todo_data (id,description) values ('" + id + "','" + req.body.desc + "')";
-    var listItem = new CreateListItem(id, req.body.desc);
-
-    con.query(insertListStatement, function (err, result) {
-      con.end();
-      res.end(JSON.stringify(listItem));
+    con.query(getIdStatement, function (err, result) {
+      if (err) throw err;
+      var id = result[0].id == null ? 1 : result[0].id + 1;
+      var insertListStatement = "Insert into todo_data (id,description) values (?, ?)";
+      var listItem = new CreateListItem(id, req.body.desc);
+      con.query(insertListStatement, [id, req.body.desc], function (err, result) {
+        con.end();
+        res.end(JSON.stringify(listItem));
+      });
     });
   });
 });
-
 
 //GET request - To retrieve todos
 router.get('/list-item', function (req, res, next) {
   var resultData;
   var con = createConnection();
-  console.log("in");
   con.connect(function (err) {
     if (err) throw err;
-    console.log("in");
     var sql = "select * from todo_data"
     con.query(sql, function (err, result) {
       if (err) throw err;
@@ -71,22 +67,14 @@ router.get('/list-item', function (req, res, next) {
 router.put('/list-item', function (req, res, next) {
   var id = req.body.id;
   var con = createConnection();
-  var sql = "SELECT is_checked from todo_data where id = " + id;
+  var getCheckedStatus = "SELECT is_checked from todo_data where id = ?";
   con.connect(function (err) {
     if (err) throw err;
-  });
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-    con.end();
-    con = createConnection();
-    if (result[0].is_checked == 0) {
-      sql = "UPDATE todo_data SET is_checked = 1 WHERE id = " + id;
-    } else {
-      sql = "UPDATE todo_data SET is_checked = 0 WHERE id = " + id;
-    }
-    con.connect(function (err) {
+    con.query(getCheckedStatus, [id], function (err, result) {
       if (err) throw err;
-      con.query(sql, function (err, result) {
+      var isChecked = (result[0].is_checked == 0) ? 1 : 0;
+      var updateCheckedStatus = "UPDATE todo_data SET is_checked = ? WHERE id = ?";
+      con.query(updateCheckedStatus, [isChecked, id], function (err, result) {
         if (err) throw err;
         con.end();
       });
@@ -102,8 +90,8 @@ router.delete('/list-item/:id', function (req, res, next) {
     if (err){
       throw new Error("Connection Failed");
     } 
-    var delete_query = "delete from todo_data where id=" + id;
-    con.query(delete_query, function (err, result) {
+    var delete_query = "delete from todo_data where id=?";
+    con.query(delete_query, [id], function (err, result) {
       if (err) {
         throw new Error("Query Failed");
       }
