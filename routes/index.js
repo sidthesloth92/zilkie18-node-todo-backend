@@ -15,13 +15,13 @@ function CreateListItem(id, desc) {
   this.isChecked = false;
 }
 
-function executeQuery(statement, queryParameters, callback, request, response) {
+function executeQuery(statement, callback, request, response) {
   var con = dbconfig.getConnection();
   con.connect(function (err) {
     if (err) {
-      throw err;
+      console.log(next("Sorry error is there in connection"));
     }
-    con.query(statement, queryParameters, function (err, result) {
+    con.query(statement, function (err, result) {
       if (err) throw err;
       if (callback != undefined) {
         callback(result, request, response);
@@ -66,24 +66,25 @@ function getTodo(result, req, res) {
   }
 };
 
-//PUT request - To Update Todos
+//PUT request - To Update status of a list item.
 router.put('/list-item', function (req, res, next) {
   var id = req.body.id;
-  var getCheckedStatus = queries.PUTSTATUS;
-  executeQuery(getCheckedStatus, [id], getIsChecked, req, res);
+  var getCheckedStatus = mysql.format(queries.PUTSTATUS, [id]);
+  executeQuery(getCheckedStatus, getIsChecked, req, res);
 });
 
 function getIsChecked(result, req, res) {
   var is_checked = result[0].is_checked == 0 ? 1 : 0;
   var id = req.body.id;
-  var updateCheckedStatus = queries.PUTUPDATE;
-  executeQuery(updateCheckedStatus, [is_checked, id], updateItemResponse, req, res);
+  var updateCheckedStatus = mysql.format(queries.PUTUPDATE, [is_checked, id]);
+  executeQuery(updateCheckedStatus, updateItemResponse, req, res);
 }
 
 function updateItemResponse(result) {
   console.log('Update success.');
 }
 
+//DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
   var delete_query = queries.DELETEQUERY;
