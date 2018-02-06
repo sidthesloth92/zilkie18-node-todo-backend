@@ -57,13 +57,8 @@ router.get('/list-item', function (req, res,next) {
 
 function getTodo(result, req, res) {
   var resultData = result;
-  if (resultData == null) {
-    res.send("Nothing to Display");
-  }
-  else {
-    console.log(JSON.stringify(resultData));
+    // console.log(JSON.stringify(resultData));
     res.send(resultData);
-  }
 };
 
   //DELETE request - To delete Todos
