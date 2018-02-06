@@ -18,7 +18,8 @@ function xmlrequest(type, url, content, callback) {
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             if (callback != undefined) {
-                console.log(request.responseText);
+                // console.log(request.responseText);
+                 console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
             }
         }
@@ -91,11 +92,13 @@ var view = {
 };
 //Adding todos to page after retrieving
 function addTodosToPage(todos) {
-    console.log(todos);
-    var toDo = JSON.parse(todos);
+    var response = JSON.parse(todos);
+    if(response.isSuccess==true) {
+        var toDo = JSON.parse(response.data);
     var element = document.getElementById("to-do-list-items");
     var fragment = document.createDocumentFragment();
     if (toDo.id > 0) {
+        console.log("something");
         fragment.appendChild(view.createUIItem(toDo));
     }
     else if (toDo.length <= 0) {
@@ -109,6 +112,8 @@ function addTodosToPage(todos) {
 
     }
     element.insertBefore(fragment, element.childNodes[0]);
+}
+
 }
 
 function updateAndDelete(event) {
