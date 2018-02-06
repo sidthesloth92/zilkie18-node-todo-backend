@@ -125,6 +125,7 @@ function updateAndDelete(event) {
             xmlrequest("delete", "list-item/" + getId[3], null, null);
         }
     } else if (getId[0] == 'update') {
+        xmlrequest("put", "list-item", "id=" + getId[3], null);
         if (document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.contains('line-through')) {
             document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.remove('line-through');
             element.innerHTML = 'Check';
@@ -132,7 +133,5 @@ function updateAndDelete(event) {
             document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.add('line-through');
             element.innerHTML = 'Uncheck';
         }
-        xmlrequest("put", "list-item", "id=" + getId[3], null);
     }
 }
-
