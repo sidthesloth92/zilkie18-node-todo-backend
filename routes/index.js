@@ -15,13 +15,13 @@ function CreateListItem(id, desc) {
   this.isChecked = false;
 }
 
-function executeQuery(statement, queryParameters, callback, request, response) {
+function executeQuery(statement, callback, request, response) {
   var con = dbconfig.getConnection();
   con.connect(function (err) {
     if (err) {
-      throw err;
+      console.log(next("Sorry error is there in connection"));
     }
-    con.query(statement, queryParameters, function (err, result) {
+    con.query(statement, function (err, result) {
       if (err) throw err;
       if (callback != undefined) {
         callback(result, request, response);
@@ -50,7 +50,7 @@ function postResponse(result, req, res) {
 }
 
 //GET request - Retrieve data
-router.get('/list-item', function (req, res,next) {
+router.get('/list-item', function (req, res, next) {
   var selectStatement = queries.GETQUERY;
   executeQuery(selectStatement, null, getTodo, req, res);
 });
@@ -61,11 +61,33 @@ function getTodo(result, req, res) {
     res.send(resultData);
 };
 
-  //DELETE request - To delete Todos
-  router.delete('/list-item/:id', function (req, res, next) {
-    var id = req.params.id;
-    var delete_query=queries.DELETEQUERY;
-    executeQuery(delete_query,[id]);
-  });
+//PUT request - To Update status of a list item.
+router.put('/list-item', function (req, res, next) {
+  var id = req.body.id;
+  var getCheckedStatus = mysql.format(queries.PUTSTATUS, [id]);
+  executeQuery(getCheckedStatus, getIsChecked, req, res);
+});
 
-  module.exports = router;
+function getIsChecked(result, req, res) {
+  var is_checked = result[0].is_checked == 0 ? 1 : 0;
+  var id = req.body.id;
+  var updateCheckedStatus = mysql.format(queries.PUTUPDATE, [is_checked, id]);
+  executeQuery(updateCheckedStatus, updateItemResponse, req, res);
+}
+
+function updateItemResponse(result) {
+  console.log('Update success.');
+}
+
+//DELETE - to remove list item
+router.delete('/list-item/:id', function (req, res, next) {
+  var id = req.params.id;
+  var delete_query = queries.DELETEQUERY;
+  executeQuery(delete_query, [id], deleteItemresponse, req, res);
+});
+
+function deleteItemresponse() {
+  console.log("Delete success");
+}
+
+module.exports = router;
