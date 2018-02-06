@@ -66,73 +66,6 @@ function getTodo(result, req, res) {
   }
 };
 
-
-<<<<<<< HEAD
-=======
-
-  // //GET request - To retrieve todos
-  // router.get('/list-item', function (req, res, next) {
-  //   var resultData;
-  //   var con = createConnection();
-  //   con.connect(function (err) {
-  //     if (err) throw err;
-  //     var sql = "select * from todo_data"
-  //     con.query(sql, function (err, result) {
-  //       if (err) throw err;
-  //       else {
-  //         resultData = result;
-  //         if (resultData == null) {
-  //           res.send("Nothing to Display");
-  //         }
-  //         else {
-  //           console.log(JSON.stringify(resultData));
-  //           res.send(resultData);
-  //         }
-  //       }
-  //       con.end();
-  //     });
-  //   });
-  // });
-
-  // //PUT request - To Update Todos
-  // router.put('/list-item', function (req, res, next) {
-  //   var id = req.body.id;
-  //   var con = createConnection();
-  //   var sql = "SELECT is_checked from todo_data where id = " + id;
-  //   con.connect(function (err) {
-  //     if (err) throw err;
-  //   });
-  //   con.query(sql, function (err, result) {
-  //     if (err) throw err;
-  //     con.end();
-  //     con = createConnection();
-  //     if (result[0].is_checked == 0) {
-  //       sql = "UPDATE todo_data SET is_checked = 1 WHERE id = " + id;
-  //     } else {
-  //       sql = "UPDATE todo_data SET is_checked = 0 WHERE id = " + id;
-  //     }
-  //     con.connect(function (err) {
-  //       if (err) { 
-  //         throw err;
-  //       }
-
-
-  //       con.query(sql, function (err, result) {
-  //         if (err) {
-  //            throw err;
-  //         }
-  //            con.end();
-  //       });
-  //     });
-  //   });
-  //   if (toDoList.listItems[index].isChecked == false) {
-  //     toDoList.listItems[index].isChecked = true;
-  //   } else {
-  //     toDoList.listItems[index].isChecked = false;
-  //   }
-  //   console.log(toDoList);
-  // });
-
   //DELETE request - To delete Todos
   router.delete('/list-item/:id', function (req, res, next) {
     var id = req.params.id;
@@ -140,5 +73,4 @@ function getTodo(result, req, res) {
     executeQuery(delete_query,[id]);
   });
 
->>>>>>> 5e112191c21fc2169aa2aee76237f0e1a46ac39e
   module.exports = router;
