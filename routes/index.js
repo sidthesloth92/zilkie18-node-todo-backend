@@ -14,25 +14,25 @@ function CreateListItem(id, desc) {
   this.description = desc;
   this.isChecked = false;
 }
-function CreateResponse(isSuccess,errorCode,data){
-  this.isSuccess=isSuccess;
-  this.errorCode=errorCode;
-  this.data=data;
+function CreateResponse(isSuccess, errorCode, data) {
+  this.isSuccess = isSuccess;
+  this.errorCode = errorCode;
+  this.data = data;
 }
 
-function executeQuery(statement,callback, req, res) {
+function executeQuery(statement, callback, req, res) {
   var con = dbconfig.getConnection();
   con.connect(function (err) {
-    if (err)  {
-      var response = new CreateResponse(false,err.code,"");
+    if (err) {
+      var response = new CreateResponse(false, err.code, "");
       res.end(JSON.stringify(response));
       return;
     }
     con.query(statement, function (err, result) {
       if (err) {
-      var response = new CreateResponse(false,err.code,"");
-      res.end(JSON.stringify(response));
-       return;
+        var response = new CreateResponse(false, err.code, "");
+        res.end(JSON.stringify(response));
+        return;
       }
       if (callback != undefined) {
         callback(result, req, res);
@@ -53,10 +53,10 @@ function insertElement(result, req, res) {
   var insertListStatement = mysql.format(queries.INSERT_QUERY, [id, req.body.desc]);
   executeQuery(insertListStatement, postResponse, req, res);
   listItem = new CreateListItem(id, req.body.desc);
-}     
+}
 
 function postResponse(result, req, res) {
-  var response = new CreateResponse(true,"",JSON.stringify(listItem));
+  var response = new CreateResponse(true, "", JSON.stringify(listItem));
   res.end(JSON.stringify(response));
 }
 
@@ -70,11 +70,11 @@ function getTodo(result, req, res) {
   var resultData = result;
   var response;
   if (resultData == null) {
-   response = new CreateResponse(true,"","Nothing to display");
-    
+    response = new CreateResponse(true, "", "Nothing to display");
+
   }
   else {
-    response = new CreateResponse(true,"",JSON.stringify(result));
+    response = new CreateResponse(true, "", JSON.stringify(result));
   }
   res.send(JSON.stringify(response));
 };
@@ -94,19 +94,19 @@ function getIsChecked(result, req, res) {
 }
 
 function updateItemResponse(result, req, res) {
-  var response = new CreateResponse(true,"","success");
+  var response = new CreateResponse(true, "", "success");
   res.end(JSON.stringify(response));
 }
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var delete_query = mysql.format(queries.DELETE_QUERY,[id]);
+  var delete_query = mysql.format(queries.DELETE_QUERY, [id]);
   executeQuery(delete_query, deleteItemresponse, req, res);
 });
 
-function deleteItemresponse(result,req,res) {
-  var response = new CreateResponse(true,"","success");
+function deleteItemresponse(result, req, res) {
+  var response = new CreateResponse(true, "", "success");
   res.end(JSON.stringify(response));
 }
 
