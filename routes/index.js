@@ -127,23 +127,11 @@ function getTodo(result, req, res) {
   //   console.log(toDoList);
   // });
 
-  // //DELETE request - To delete Todos
-  // router.delete('/list-item/:id', function (req, res, next) {
-  //   var id = req.params.id;
-  //   var con = createConnection();
-  //   con.connect(function (err) {
-  //     if (err) {
-  //       throw new Error("Connection Failed");
-  //     }
-  //     var delete_query = "delete from todo_data where id=" + id;
-  //     con.query(delete_query, function (err, result) {
-  //       if (err) {
-  //         throw new Error("Query Failed");
-  //       }
-  //       con.end();
-  //     });
-  //   });
-
-  // });
+  //DELETE request - To delete Todos
+  router.delete('/list-item/:id', function (req, res, next) {
+    var id = req.params.id;
+    var delete_query=queries.DELETEQUERY;
+    executeQuery(delete_query,[id]);
+  });
 
   module.exports = router;
