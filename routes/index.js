@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var db = require('../public/db');
 //Mysql Connection
 var mysql = require('mysql');
 
@@ -66,18 +66,15 @@ router.get('/list-item', function (req, res, next) {
 //PUT request - To Update Todos
 router.put('/list-item', function (req, res, next) {
   var id = req.body.id;
-  var con = createConnection();
+  var con = db.getConnection();
   var getCheckedStatus = "SELECT is_checked from todo_data where id = ?";
-  con.connect(function (err) {
+  con.query(getCheckedStatus, [id], function (err, result) {
     if (err) throw err;
-    con.query(getCheckedStatus, [id], function (err, result) {
+    var isChecked = (result[0].is_checked == 0) ? 1 : 0;
+    var updateCheckedStatus = "UPDATE todo_data SET is_checked = ? WHERE id = ?";
+    con.query(updateCheckedStatus, [isChecked, id], function (err, result) {
       if (err) throw err;
-      var isChecked = (result[0].is_checked == 0) ? 1 : 0;
-      var updateCheckedStatus = "UPDATE todo_data SET is_checked = ? WHERE id = ?";
-      con.query(updateCheckedStatus, [isChecked, id], function (err, result) {
-        if (err) throw err;
-        con.end();
-      });
+      // con.end();
     });
   });
 });
