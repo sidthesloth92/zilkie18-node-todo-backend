@@ -71,7 +71,6 @@ function getTodo(result, req, res) {
   var response;
   if (resultData == null) {
     response = new CreateResponse(true, "", "Nothing to display");
-
   }
   else {
     response = new CreateResponse(true, "", JSON.stringify(result));
@@ -83,6 +82,7 @@ function getTodo(result, req, res) {
 router.put('/list-item', function (req, res, next) {
   var id = req.body.id;
   var getCheckedStatus = mysql.format(queries.PUT_STATUS, [id]);
+  res.end('first');
   executeQuery(getCheckedStatus, getIsChecked, req, res);
 });
 
@@ -90,11 +90,13 @@ function getIsChecked(result, req, res) {
   var is_checked = result[0].is_checked == 0 ? 1 : 0;
   var id = req.body.id;
   var updateCheckedStatus = mysql.format(queries.PUT_UPDATE, [is_checked, id]);
+  res.end('second');
   executeQuery(updateCheckedStatus, updateItemResponse, req, res);
 }
 
 function updateItemResponse(result, req, res) {
   var response = new CreateResponse(true, "", "success");
+  res.end('third');
   res.end(JSON.stringify(response));
 }
 
