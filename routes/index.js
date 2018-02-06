@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-//Mysql Connection
+var app = express();
 var mysql = require('mysql');
 var queries = require('./queries');
 var dbconfig = require('./dbconfig');
@@ -18,7 +18,9 @@ function CreateListItem(id, desc) {
 function executeQuery(statement, queryParameters, callback, request, response) {
   var con = dbconfig.getConnection();
   con.connect(function (err) {
-    if (err) throw err;
+    if (err) {
+      throw err;
+    }
     con.query(statement, queryParameters, function (err, result) {
       if (err) throw err;
       if (callback != undefined) {
@@ -28,6 +30,7 @@ function executeQuery(statement, queryParameters, callback, request, response) {
     });
   });
 }
+
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
   var getIdStatement = queries.POSTID;
@@ -47,7 +50,7 @@ function postResponse(result, req, res) {
 }
 
 //GET request - Retrieve data
-router.get('/list-item', function (req, res, next) {
+router.get('/list-item', function (req, res,next) {
   var selectStatement = queries.GETQUERY;
   executeQuery(selectStatement, null, getTodo, req, res);
 });
@@ -79,50 +82,12 @@ function getIsChecked (result, req, res) {
 
 function updateStatusResponse (result, req, res) {
   console.log('Update success.');
-  res.json({ message: 'Successfully updated' });
 }
 
-  // //GET request - To retrieve todos
-  // router.get('/list-item', function (req, res, next) {
-  //   var resultData;
-  //   var con = createConnection();
-  //   con.connect(function (err) {
-  //     if (err) throw err;
-  //     var sql = "select * from todo_data"
-  //     con.query(sql, function (err, result) {
-  //       if (err) throw err;
-  //       else {
-  //         resultData = result;
-  //         if (resultData == null) {
-  //           res.send("Nothing to Display");
-  //         }
-  //         else {
-  //           console.log(JSON.stringify(resultData));
-  //           res.send(resultData);
-  //         }
-  //       }
-  //       con.end();
-  //     });
-  //   });
-  // });
+router.delete('/list-item/:id', function (req, res, next) {
+  var id = req.params.id;
+  var delete_query=queries.DELETEQUERY;
+  executeQuery(delete_query,[id]);
+});
 
-  // //DELETE request - To delete Todos
-  // router.delete('/list-item/:id', function (req, res, next) {
-  //   var id = req.params.id;
-  //   var con = createConnection();
-  //   con.connect(function (err) {
-  //     if (err) {
-  //       throw new Error("Connection Failed");
-  //     }
-  //     var delete_query = "delete from todo_data where id=" + id;
-  //     con.query(delete_query, function (err, result) {
-  //       if (err) {
-  //         throw new Error("Query Failed");
-  //       }
-  //       con.end();
-  //     });
-  //   });
-
-  // });
-
-  module.exports = router;
+module.exports = router;
