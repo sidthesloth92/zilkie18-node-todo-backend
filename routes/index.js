@@ -50,7 +50,7 @@ function postResponse(result, req, res) {
 }
 
 //GET request - Retrieve data
-router.get('/list-item', function (req, res,next) {
+router.get('/list-item', function (req, res, next) {
   var selectStatement = queries.GETQUERY;
   executeQuery(selectStatement, null, getTodo, req, res);
 });
@@ -73,21 +73,25 @@ router.put('/list-item', function (req, res, next) {
   executeQuery(getCheckedStatus, [id], getIsChecked, req, res);
 });
 
-function getIsChecked (result, req, res) {
+function getIsChecked(result, req, res) {
   var is_checked = result[0].is_checked == 0 ? 1 : 0;
   var id = req.body.id;
   var updateCheckedStatus = queries.PUTUPDATE;
-  executeQuery(updateCheckedStatus, [is_checked, id], updateStatusResponse, req, res);
+  executeQuery(updateCheckedStatus, [is_checked, id], updateItemResponse, req, res);
 }
 
-function updateStatusResponse (result, req, res) {
+function updateItemResponse(result) {
   console.log('Update success.');
 }
 
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var delete_query=queries.DELETEQUERY;
-  executeQuery(delete_query,[id]);
+  var delete_query = queries.DELETEQUERY;
+  executeQuery(delete_query, [id], deleteItemresponse, req, res);
 });
+
+function deleteItemresponse() {
+  console.log("Delete success");
+}
 
 module.exports = router;
