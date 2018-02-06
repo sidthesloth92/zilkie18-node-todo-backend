@@ -67,6 +67,8 @@ function getTodo(result, req, res) {
 };
 
 
+<<<<<<< HEAD
+=======
 
   // //GET request - To retrieve todos
   // router.get('/list-item', function (req, res, next) {
@@ -138,4 +140,5 @@ function getTodo(result, req, res) {
     executeQuery(delete_query,[id]);
   });
 
+>>>>>>> 5e112191c21fc2169aa2aee76237f0e1a46ac39e
   module.exports = router;
