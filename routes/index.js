@@ -14,15 +14,28 @@ function CreateListItem(id, desc) {
   this.description = desc;
   this.isChecked = false;
 }
+function CreateResponse(isSuccess, errorCode, data) {
+  this.isSuccess = isSuccess;
+  this.errorCode = errorCode;
+  this.data = data;
+}
 
-function executeQuery(statement, callback, request, response) {
-  var con = dbconfig.getConnection();
+function executeQuery(statement, callback, req, res) {
+  var con = dbconfig.getConnection(); 
   con.connect(function (err) {
-    if (err) throw err;
+    if (err) {
+      var response = new CreateResponse(false, err.code, "");
+      res.end(JSON.stringify(response));
+      return;
+    }
     con.query(statement, function (err, result) {
-      if (err) throw err;
+      if (err) {
+        var response = new CreateResponse(false, err.code, "");
+        res.end(JSON.stringify(response));
+        return;
+      }
       if (callback != undefined) {
-        callback(result, request, response);
+        callback(result, req, res);
         con.end();
       }
     });
@@ -40,14 +53,14 @@ function insertElement(result, req, res) {
   var insertListStatement = mysql.format(queries.INSERT_QUERY, [id, req.body.desc]);
   executeQuery(insertListStatement, postResponse, req, res);
   listItem = new CreateListItem(id, req.body.desc);
-}     
-
-function postResponse(result, req, res) {
-  console.log(result);
-  res.end(JSON.stringify(listItem));
 }
 
-//GET request - Retrieve data
+function postResponse(result, req, res) {
+  var response = new CreateResponse(true, "", JSON.stringify(listItem));
+  res.end(JSON.stringify(response));
+}
+
+// GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
   var selectStatement = queries.GET_QUERY;
   executeQuery(selectStatement, getTodo, req, res);
@@ -73,19 +86,21 @@ function getIsChecked(result, req, res) {
   executeQuery(updateCheckedStatus, updateItemResponse, req, res);
 }
 
-function updateItemResponse(result) {
-  console.log('Update success.');
+function updateItemResponse(result, req, res) {
+  var response = new CreateResponse(true, "", "success");
+  res.end(JSON.stringify(response));
 }
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
-  var delete_query = mysql.format(queries.DELETE_QUERY,[id]);
+  var delete_query = mysql.format(queries.DELETE_QUERY, [id]);
   executeQuery(delete_query, deleteItemresponse, req, res);
 });
 
-function deleteItemresponse() {
-  console.log("Delete success");
+function deleteItemresponse(result, req, res) {
+  var response = new CreateResponse(true, "", "success");
+  res.end(JSON.stringify(response));
 }
 
 module.exports = router;
