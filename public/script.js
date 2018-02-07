@@ -92,7 +92,7 @@ var view = {
 function addTodosToPage(todos) {
     var response = JSON.parse(todos);
     if (response.isSuccess == true) {
-        var toDo = JSON.parse(response.data);
+        var toDo = response.data;
         var element = document.getElementById("to-do-list-items");
         var fragment = document.createDocumentFragment();
         if (toDo.id > 0) {
