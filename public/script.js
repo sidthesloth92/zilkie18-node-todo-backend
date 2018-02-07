@@ -19,13 +19,7 @@ function xmlrequest(type, url, content, callback) {
         if (request.readyState == 4 && request.status == 200) {
             console.log(request.responseText);
             if (callback != undefined) {
-                console.log(request.responseText);
-                // console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
-            }
-            else{
-                return JSON.parse(request.responseText).isSuccess;
-                
             }
         }
      };
@@ -33,8 +27,6 @@ function xmlrequest(type, url, content, callback) {
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(content);
 }
-
-
 
 function init() {
     $('#add-item-button').click(addList);
@@ -52,7 +44,6 @@ function addList() {
     }
 }
 
-
 //Create an element in the UI list
 var view = {
     createDelButton: function (id) {
@@ -66,7 +57,7 @@ var view = {
     },
     createStrikeButton: function (id) {
         var strikeButton = window.document.createElement('span');
-        strikeButton.textContent = 'check';
+        strikeButton.textContent = 'Check';
         strikeButton.classList.add('checked-button');
         strikeButton.classList.add('list-button');
         strikeButton.dataset.id = "update-item-button-" + id;
@@ -96,16 +87,13 @@ var view = {
 function addTodosToPage(todos) {
     var response = JSON.parse(todos);
     if (response.isSuccess == true) {
-        var toDo = JSON.parse(response.data);
+        var toDo = response.data;
         var element = document.getElementById("to-do-list-items");
         var fragment = document.createDocumentFragment();
         if (toDo.id > 0) {
             fragment.appendChild(view.createUIItem(toDo));
         }
-        else if (toDo.length <= 0) {
-            //        alert('The list is empty');
-        }
-        else {
+        else if(toDo.length > 0) {
             for (var i = 0; i < toDo.length; i++) {
                 var todoItem = toDo[i];
                 fragment.appendChild(view.createUIItem(todoItem));
@@ -121,19 +109,38 @@ function updateAndDelete(event) {
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
-        xmlrequest("delete", "list-item/" + getId[3], null, null);
-       
         if (window.confirm('Do you want to delete the selected list item?') == true) {
-            window.document.querySelector('li[data-id="list-item-' + getId[3] + '"]').remove();
+            xmlrequest("delete", "list-item/" + getId[3],null,deleteItem);
         }
     } else if (getId[0] == 'update') {
-        xmlrequest("put", "list-item", "id=" + getId[3], null);
-        if (document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.contains('line-through')) {
-            document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.remove('line-through');
-            element.innerHTML = 'Check';
+        xmlrequest("put", "list-item", "id=" + getId[3], updateUIItem);
+    }
+}
+function deleteItem(responseData)
+{
+var isSuccess=JSON.parse(responseData).isSuccess;
+var id=JSON.parse(responseData).data;
+if(isSuccess)
+{
+    window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();  
+
+}
+else{
+    console.log("Error In Deleting");
+}
+}
+
+
+
+function updateUIItem(updateResponseData) {
+    var id = (JSON.parse(updateResponseData)).data;
+    if(JSON.parse(updateResponseData).isSuccess == true) {
+        if (document.querySelector('div[data-id="list-text-' + id + '"]').classList.contains('line-through')) {
+            document.querySelector('div[data-id="list-text-' + id + '"]').classList.remove('line-through');
+            document.querySelector('.checked-button[data-id="update-item-button-' + id + '"]').innerHTML = 'Check';
         } else {
-            document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.add('line-through');
-            element.innerHTML = 'Uncheck';
+            document.querySelector('div[data-id="list-text-' + id + '"]').classList.add('line-through');
+            document.querySelector('.checked-button[data-id="update-item-button-' + id + '"]').innerHTML = 'Uncheck';
         }
     }
 }
