@@ -6,6 +6,7 @@ var queries = require('./queries');
 var dbconfig = require('./dbconfig');
 var errors = require('./errors');
 var mysql = require('mysql');
+var dbDelegate = require('./dbDelegate');
 var listItem;
 
 //Constructor to add todo Items 
@@ -62,8 +63,7 @@ function postResponse(result, req, res) {
 
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
-  var selectStatement = queries.GET_QUERY;
-  executeQuery(selectStatement, getTodo, req, res);
+  executeQuery(queries.GET_QUERY, getTodo, req, res);
 });
 
 function getTodo(result, req, res) {
@@ -81,35 +81,41 @@ function getTodo(result, req, res) {
 //PUT request - To Update status of a list item.
 router.put('/list-item', function (req, res, next) {
   var id = req.body.id;
-  var getCheckedStatus = mysql.format(queries.PUT_STATUS, [id]);
-  res.end('first');
-  executeQuery(getCheckedStatus, getIsChecked, req, res);
+  var getCheckedStatus = mysql.format(queries.GET_STATUS, [id]);
+  var getStatusPromise = dbDelegate.executeQuery(getCheckedStatus);
+  getStatusPromise.then(function (result) {
+    var is_checked = result[0].is_checked == 0 ? 1 : 0;
+    var updateCheckedStatus = mysql.format(queries.PUT_UPDATE, [is_checked, id]);
+    var updateStatusPromise = dbDelegate.executeQuery(updateCheckedStatus);
+    updateStatusPromise.then(function (result) {
+      var response = new CreateResponse(true, "", "Update success for item " + id);
+      res.end(JSON.stringify(response));
+    }).catch(function (error) {
+      var response = new CreateResponse(false, error.code, "");
+      res.end(JSON.stringify(response));
+    });
+  }).catch(function (error) {
+    var response = new CreateResponse(false, error.code, "");
+    res.end(JSON.stringify(response));
+  });
+  // executeQuery(getCheckedStatus, function getIsChecked(result) {
+  //   var is_checked = result[0].is_checked == 0 ? 1 : 0;
+  //   var updateCheckedStatus = mysql.format(queries.PUT_UPDATE, [is_checked, id]);
+  //   executeQuery(updateCheckedStatus, function putResponse(result) {
+  //     var response = new CreateResponse(true, "", "Update success for item " + id);
+  //     res.end(JSON.stringify(response));
+  //   }, req, res);
+  // }, req, res);
 });
-
-function getIsChecked(result, req, res) {
-  var is_checked = result[0].is_checked == 0 ? 1 : 0;
-  var id = req.body.id;
-  var updateCheckedStatus = mysql.format(queries.PUT_UPDATE, [is_checked, id]);
-  res.end('second');
-  executeQuery(updateCheckedStatus, updateItemResponse, req, res);
-}
-
-function updateItemResponse(result, req, res) {
-  var response = new CreateResponse(true, "", "success");
-  res.end('third');
-  res.end(JSON.stringify(response));
-}
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
   var id = req.params.id;
   var delete_query = mysql.format(queries.DELETE_QUERY, [id]);
-  executeQuery(delete_query, deleteItemresponse, req, res);
+  executeQuery(delete_query, function deleteResponse(result) {
+    var response = new CreateResponse(true, "", "Delete success for item " + id);
+    res.end(JSON.stringify(response));
+  }, req, res);
 });
-
-function deleteItemresponse(result, req, res) {
-  var response = new CreateResponse(true, "", "success");
-  res.end(JSON.stringify(response));
-}
 
 module.exports = router;
