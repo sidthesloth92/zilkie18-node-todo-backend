@@ -34,5 +34,25 @@ module.exports = {
                 reject(response);
             });
         });
+    },
+    updateListItem: function (req) {
+        return new Promise(function (resolve, reject) {
+            var id = req.body.id;
+            var getCheckedStatus = mysql.format(queries.GET_STATUS, [id]);
+            dao.executeQuery(getCheckedStatus).then(function (result) {
+                var isChecked = result[0].is_checked == 0 ? 1 : 0;
+                var updateCheckedStatus = mysql.format(queries.PUT_UPDATE, [isChecked, id]);
+                dao.executeQuery(updateCheckedStatus).then(function (result) {
+                    var response = new CreateResponse(true, "", id);
+                    resolve(response);
+                }).catch(function(error) {
+                    var response = new CreateResponse(false, error, "");
+                    reject(response);
+                })
+            }).catch(function (error) {
+                var response = new CreateResponse(false, error, "");
+                reject(response);
+            });
+        });
     }
 }

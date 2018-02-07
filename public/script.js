@@ -19,8 +19,6 @@ function xmlrequest(type, url, content, callback) {
         if (request.readyState == 4 && request.status == 200) {
             console.log(request.responseText);
             if (callback != undefined) {
-                console.log(request.responseText);
-                // console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
             }
         }
@@ -62,7 +60,7 @@ var view = {
     },
     createStrikeButton: function (id) {
         var strikeButton = window.document.createElement('span');
-        strikeButton.textContent = 'check';
+        strikeButton.textContent = 'Check';
         strikeButton.classList.add('checked-button');
         strikeButton.classList.add('list-button');
         strikeButton.dataset.id = "update-item-button-" + id;
@@ -122,13 +120,19 @@ function updateAndDelete(event) {
             window.document.querySelector('li[data-id="list-item-' + getId[3] + '"]').remove();
         }
     } else if (getId[0] == 'update') {
-        xmlrequest("put", "list-item", "id=" + getId[3], null);
-        if (document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.contains('line-through')) {
-            document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.remove('line-through');
-            element.innerHTML = 'Check';
+        xmlrequest("put", "list-item", "id=" + getId[3], updateUIItem);
+    }
+}
+
+function updateUIItem(updateResponseData) {
+    var id =(JSON.parse(updateResponseData)).data;
+    if(JSON.parse(updateResponseData).isSuccess == true) {
+        if (document.querySelector('div[data-id="list-text-' + id + '"]').classList.contains('line-through')) {
+            document.querySelector('div[data-id="list-text-' + id + '"]').classList.remove('line-through');
+            document.querySelector('.checked-button[data-id="update-item-button-' + id + '"]').innerHTML = 'Check';
         } else {
-            document.querySelector('div[data-id="list-text-' + getId[3] + '"]').classList.add('line-through');
-            element.innerHTML = 'Uncheck';
+            document.querySelector('div[data-id="list-text-' + id + '"]').classList.add('line-through');
+            document.querySelector('.checked-button[data-id="update-item-button-' + id + '"]').innerHTML = 'Uncheck';
         }
     }
 }
