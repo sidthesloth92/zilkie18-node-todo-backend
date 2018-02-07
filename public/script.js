@@ -18,8 +18,8 @@ function xmlrequest(type, url, content, callback) {
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             if (callback != undefined) {
-                // console.log(request.responseText);
-                console.log(JSON.parse(request.responseText));
+                console.log(request.responseText);
+                // console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
             }
         }
@@ -69,7 +69,6 @@ var view = {
     },
     createUIItem: function (todoItem) {
         var id = todoItem.id;
-        console.log(id);
         var newList = document.createElement('li');
         newList.classList.add('list');
         var listText = document.createElement('div');
@@ -97,7 +96,6 @@ function addTodosToPage(todos) {
         var element = document.getElementById("to-do-list-items");
         var fragment = document.createDocumentFragment();
         if (toDo.id > 0) {
-            console.log("something");
             fragment.appendChild(view.createUIItem(toDo));
         }
         else if (toDo.length <= 0) {

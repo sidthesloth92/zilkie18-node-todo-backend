@@ -7,7 +7,7 @@ var dbconfig = require('./dbconfig');
 var errors = require('./errors');
 var mysql = require('mysql');
 var listItem;
-
+var delegate = require('./delegate');
 //Constructor to add todo Items 
 function CreateListItem(id, desc) {
   this.id = id;
@@ -20,45 +20,16 @@ function CreateResponse(isSuccess, errorCode, data) {
   this.data = data;
 }
 
-function executeQuery(statement, callback, req, res) {
-  var con = dbconfig.getConnection();
-  con.connect(function (err) {
-    if (err) {
-      var response = new CreateResponse(false, err.code, "");
-      res.end(JSON.stringify(response));
-      return;
-    }
-    con.query(statement, function (err, result) {
-      if (err) {
-        var response = new CreateResponse(false, err.code, "");
-        res.end(JSON.stringify(response));
-        return;
-      }
-      if (callback != undefined) {
-        callback(result, req, res);
-        con.end();
-      }
-    });
-  });
-}
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
-  var getIdStatement = queries.POST_ID;
-  executeQuery(getIdStatement, insertElement, req, res);
+  delegate.addListItem(req).then(function (response) {
+    res.json(response);
+  }).catch(function (error) {
+    res.json(error);
+  });
 });
 
-function insertElement(result, req, res) {
-  var id = result[0].id == null ? 1 : result[0].id + 1;
-  var insertListStatement = mysql.format(queries.INSERT_QUERY, [id, req.body.desc]);
-  executeQuery(insertListStatement, postResponse, req, res);
-  listItem = new CreateListItem(id, req.body.desc);
-}
-
-function postResponse(result, req, res) {
-  var response = new CreateResponse(true, "", JSON.stringify(listItem));
-  res.end(JSON.stringify(response));
-}
 
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
@@ -109,5 +80,7 @@ function deleteItemresponse(result, req, res) {
   var response = new CreateResponse(true, "", "success");
   res.end(JSON.stringify(response));
 }
+
+
 
 module.exports = router;
