@@ -98,10 +98,7 @@ function addTodosToPage(todos) {
         if (toDo.id > 0) {
             fragment.appendChild(view.createUIItem(toDo));
         }
-        else if (toDo.length <= 0) {
-            //        alert('The list is empty');
-        }
-        else {
+        else if(toDo.length > 0) {
             for (var i = 0; i < toDo.length; i++) {
                 var todoItem = toDo[i];
                 fragment.appendChild(view.createUIItem(todoItem));
