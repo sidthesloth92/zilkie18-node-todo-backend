@@ -75,7 +75,6 @@ module.exports = {
     getListItem : function(req) {
         return new Promise (function(resolve,reject) {
             dao.executeQuery(queries.GET_QUERY).then(function (result){
-                console.log(result);
                 var response = new CreateResponse(true, "", result);
                 resolve(response);
             }).catch(function(error) {

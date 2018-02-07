@@ -22,7 +22,7 @@ function xmlrequest(type, url, content, callback) {
                 callback(request.responseText);
             }
         }
-     };
+    };
     request.open(type, url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(content);
@@ -93,16 +93,14 @@ function addTodosToPage(todos) {
         if (toDo.id > 0) {
             fragment.appendChild(view.createUIItem(toDo));
         }
-        else if(toDo.length > 0) {
+        else if (toDo.length > 0) {
             for (var i = 0; i < toDo.length; i++) {
                 var todoItem = toDo[i];
                 fragment.appendChild(view.createUIItem(todoItem));
             }
-
         }
         element.insertBefore(fragment, element.childNodes[0]);
     }
-
 }
 
 function updateAndDelete(event) {
@@ -110,31 +108,26 @@ function updateAndDelete(event) {
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
         if (window.confirm('Do you want to delete the selected list item?') == true) {
-            xmlrequest("delete", "list-item/" + getId[3],null,deleteItem);
+            xmlrequest("delete", "list-item/" + getId[3], null, deleteItem);
         }
     } else if (getId[0] == 'update') {
         xmlrequest("put", "list-item", "id=" + getId[3], updateUIItem);
     }
 }
-function deleteItem(responseData)
-{
-var isSuccess=JSON.parse(responseData).isSuccess;
-var id=JSON.parse(responseData).data;
-if(isSuccess)
-{
-    window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();  
+function deleteItem(responseData) {
+    var isSuccess = JSON.parse(responseData).isSuccess;
+    var id = JSON.parse(responseData).data;
+    if (isSuccess) {
+        window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();
 
-}
-else{
-    console.log("Error In Deleting");
-}
+    }
 }
 
 
 
 function updateUIItem(updateResponseData) {
     var id = (JSON.parse(updateResponseData)).data;
-    if(JSON.parse(updateResponseData).isSuccess == true) {
+    if (JSON.parse(updateResponseData).isSuccess == true) {
         if (document.querySelector('div[data-id="list-text-' + id + '"]').classList.contains('line-through')) {
             document.querySelector('div[data-id="list-text-' + id + '"]').classList.remove('line-through');
             document.querySelector('.checked-button[data-id="update-item-button-' + id + '"]').innerHTML = 'Check';
