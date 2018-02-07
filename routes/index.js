@@ -98,14 +98,6 @@ router.put('/list-item', function (req, res, next) {
     var response = new CreateResponse(false, error.code, "");
     res.end(JSON.stringify(response));
   });
-  // executeQuery(getCheckedStatus, function getIsChecked(result) {
-  //   var is_checked = result[0].is_checked == 0 ? 1 : 0;
-  //   var updateCheckedStatus = mysql.format(queries.PUT_UPDATE, [is_checked, id]);
-  //   executeQuery(updateCheckedStatus, function putResponse(result) {
-  //     var response = new CreateResponse(true, "", "Update success for item " + id);
-  //     res.end(JSON.stringify(response));
-  //   }, req, res);
-  // }, req, res);
 });
 
 //DELETE - to remove list item
