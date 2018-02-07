@@ -7,6 +7,7 @@ function CreateListItem(id, desc) {
     this.description = desc;
     this.isChecked = false;
 }
+
 function CreateResponse(isSuccess, errorCode, data) {
     this.isSuccess = isSuccess;
     this.errorCode = errorCode;
@@ -22,7 +23,7 @@ module.exports = {
                 var listItem = new CreateListItem(id, req.body.desc);
                 var insertListStatement = mysql.format(queries.INSERT_QUERY, [id, req.body.desc]);
                 dao.executeQuery(insertListStatement).then(function (result) {
-                    var response = new CreateResponse(true, "", JSON.stringify(listItem));
+                    var response = new CreateResponse(true, "", listItem);
                     resolve(response);
                 }).catch(function (error) {
                     var response = new CreateResponse(false, error, "");
@@ -53,6 +54,18 @@ module.exports = {
                 var response = new CreateResponse(false, error, "");
                 reject(response);
             });
-        });
+        })
+    },
+    getListItem : function(req) {
+        return new Promise (function(resolve,reject) {
+            dao.executeQuery(queries.GET_QUERY).then(function (result){
+                console.log(result);
+                var response = new CreateResponse(true, "", result);
+                resolve(response);
+            }).catch(function(error) {
+                var response = new CreateResponse(false,error, "");
+                reject(response);
+            });
+        })
     }
 }

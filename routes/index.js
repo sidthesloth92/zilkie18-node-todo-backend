@@ -7,17 +7,6 @@ var dbconfig = require('./dbconfig');
 var mysql = require('mysql');
 var listItem;
 var delegate = require('./delegate');
-//Constructor to add todo Items 
-function CreateListItem(id, desc) {
-  this.id = id;
-  this.description = desc;
-  this.isChecked = false;
-}
-function CreateResponse(isSuccess, errorCode, data) {
-  this.isSuccess = isSuccess;
-  this.errorCode = errorCode;
-  this.data = data;
-}
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
@@ -30,20 +19,12 @@ router.post('/list-item', function (req, res, next) {
 
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
-  executeQuery(queries.GET_QUERY, getTodo, req, res);
+  delegate.getListItem(req).then(function(response) {
+    res.json(response);
+  }).catch(function (error) {
+    res.json(error);
+  })
 });
-
-function getTodo(result, req, res) {
-  var resultData = result;
-  var response;
-  if (resultData == null) {
-    response = new CreateResponse(true, "", "Nothing to display");
-  }
-  else {
-    response = new CreateResponse(true, "", JSON.stringify(result));
-  }
-  res.send(JSON.stringify(response));
-};
 
 //PUT request - To Update status of a list item.
 router.put('/list-item', function (req, res, next) {

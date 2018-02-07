@@ -28,8 +28,6 @@ function xmlrequest(type, url, content, callback) {
     request.send(content);
 }
 
-
-
 function init() {
     $('#add-item-button').click(addList);
     $('#to-do-list-items').click(function updateAndDelete1(event) {
@@ -45,7 +43,6 @@ function addList() {
         xmlrequest("post", "list-item", "desc=" + text, addTodosToPage);
     }
 }
-
 
 //Create an element in the UI list
 var view = {
@@ -90,16 +87,13 @@ var view = {
 function addTodosToPage(todos) {
     var response = JSON.parse(todos);
     if (response.isSuccess == true) {
-        var toDo = JSON.parse(response.data);
+        var toDo = response.data;
         var element = document.getElementById("to-do-list-items");
         var fragment = document.createDocumentFragment();
         if (toDo.id > 0) {
             fragment.appendChild(view.createUIItem(toDo));
         }
-        else if (toDo.length <= 0) {
-            //        alert('The list is empty');
-        }
-        else {
+        else if(toDo.length > 0) {
             for (var i = 0; i < toDo.length; i++) {
                 var todoItem = toDo[i];
                 fragment.appendChild(view.createUIItem(todoItem));
@@ -125,7 +119,7 @@ function updateAndDelete(event) {
 }
 
 function updateUIItem(updateResponseData) {
-    var id =(JSON.parse(updateResponseData)).data;
+    var id = (JSON.parse(updateResponseData)).data;
     if(JSON.parse(updateResponseData).isSuccess == true) {
         if (document.querySelector('div[data-id="list-text-' + id + '"]').classList.contains('line-through')) {
             document.querySelector('div[data-id="list-text-' + id + '"]').classList.remove('line-through');
