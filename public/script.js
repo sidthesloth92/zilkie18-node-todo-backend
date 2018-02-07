@@ -23,6 +23,10 @@ function xmlrequest(type, url, content, callback) {
                 // console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
             }
+            else{
+                return JSON.parse(request.responseText).isSuccess;
+                
+            }
         }
      };
     request.open(type, url, true);
@@ -118,6 +122,7 @@ function updateAndDelete(event) {
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
         xmlrequest("delete", "list-item/" + getId[3], null, null);
+       
         if (window.confirm('Do you want to delete the selected list item?') == true) {
             window.document.querySelector('li[data-id="list-item-' + getId[3] + '"]').remove();
         }

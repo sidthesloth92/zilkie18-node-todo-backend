@@ -34,5 +34,22 @@ module.exports = {
                 reject(response);
             });
         });
+    }  ,
+
+
+    deleteListItem:function(req)
+    { return new Promise(function (resolve, reject) {
+       var id = req.params.id; 
+       var deleteQuery= mysql.format(queries.DELETE_QUERY, [id]);
+       dao.executeQuery(deleteQuery).then(function (result) {
+        var successResponse = new CreateResponse(true, "","Success");
+        resolve(successResponse);
+    }).catch(function (error) {
+        var errorResponse = new CreateResponse(false, error, "");
+        reject(errorResponse);
+    });
+
+    });
+
     }
 }

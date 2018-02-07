@@ -4,7 +4,6 @@ var app = express();
 var mysql = require('mysql');
 var queries = require('./queries');
 var dbconfig = require('./dbconfig');
-var errors = require('./errors');
 var mysql = require('mysql');
 var dbDelegate = require('./dbDelegate');
 var listItem;
@@ -81,18 +80,15 @@ router.put('/list-item', function (req, res, next) {
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
-  var id = req.params.id;
-  var delete_query = mysql.format(queries.DELETE_QUERY, [id]);
-  executeQuery(delete_query, function deleteResponse(result) {
-    var response = new CreateResponse(true, "", "Delete success for item " + id);
-    res.end(JSON.stringify(response));
-  }, req, res);
+  delegate.deleteListItem(req).then(function (successResponse) {
+    res.json(successResponse);
+  }).catch(function (failureResponse) {
+    res.json(failureResponse);
+  });
+  
+
 });
 
-function deleteItemresponse(result, req, res) {
-  var response = new CreateResponse(true, "", "success");
-  res.end(JSON.stringify(response));
-}
 
 
 
