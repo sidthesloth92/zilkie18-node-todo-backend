@@ -19,6 +19,8 @@ function xmlrequest(type, url, content, callback) {
         if (request.readyState == 4 && request.status == 200) {
             console.log(request.responseText);
             if (callback != undefined) {
+                console.log(request.responseText);
+                // console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
             }
         }
@@ -68,7 +70,6 @@ var view = {
     },
     createUIItem: function (todoItem) {
         var id = todoItem.id;
-        console.log(id);
         var newList = document.createElement('li');
         newList.classList.add('list');
         var listText = document.createElement('div');
