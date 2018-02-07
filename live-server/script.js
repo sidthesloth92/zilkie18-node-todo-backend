@@ -14,7 +14,7 @@ function getTodos() {
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
-    var request = new window.XMLHttpRequest();
+    var request = new window.XMLHttpRequest({mozSystem:true});
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             console.log(request.responseText);
@@ -23,9 +23,9 @@ function xmlrequest(type, url, content, callback) {
             }
         }
     };
-    request.open(type, url, true);
-    request.setRequestHeader("Access-Control-Allow-Methods",type);
-    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.open(type, "http://localhost:3000/"+url, true);
+    request.setRequestHeader("Access-Control-Allow-Methods","*");
+     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(content);
 }
 
@@ -41,7 +41,7 @@ function addList() {
     if (text.length == 0) {
         alert('Enter the task in the text field');
     } else {
-        xmlrequest("post", "list-item", "desc=" + text, addTodosToPage);
+        xmlrequest("POST", "list-item", "desc=" + text, addTodosToPage);
     }
 }
 

@@ -11,7 +11,7 @@ var delegate = require('./delegate');
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
   delegate.addListItem(req).then(function (response) {
-    res.json(response);
+     res.json(response);
   }).catch(function (error) {
     res.json(error);
   });
@@ -20,7 +20,7 @@ router.post('/list-item', function (req, res, next) {
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
   delegate.getListItem(req).then(function (response) {
-    res.json(response);
+     res.json(response);
   }).catch(function (error) {
     res.json(error);
   })

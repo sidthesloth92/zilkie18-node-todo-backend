@@ -35,21 +35,21 @@ module.exports = {
                 reject(response);
             });
         });
-    }  ,
+    },
 
-    deleteListItem:function(req)
-    { return new Promise(function (resolve, reject) {
-       var id = req.params.id; 
-       var deleteQuery= mysql.format(queries.DELETE_QUERY, [id]);
-       dao.executeQuery(deleteQuery).then(function (result) {
-        var successResponse = new CreateResponse(true, "",id);
-        resolve(successResponse);
-    }).catch(function (error) {
-        var errorResponse = new CreateResponse(false, error, "");
-        reject(errorResponse);
-    });
+    deleteListItem: function (req) {
+        return new Promise(function (resolve, reject) {
+            var id = req.params.id;
+            var deleteQuery = mysql.format(queries.DELETE_QUERY, [id]);
+            dao.executeQuery(deleteQuery).then(function (result) {
+                var successResponse = new CreateResponse(true, "", id);
+                resolve(successResponse);
+            }).catch(function (error) {
+                var errorResponse = new CreateResponse(false, error, "");
+                reject(errorResponse);
+            });
 
-    });
+        });
 
     },
     updateListItem: function (req) {
@@ -62,7 +62,7 @@ module.exports = {
                 dao.executeQuery(updateCheckedStatus).then(function (result) {
                     var response = new CreateResponse(true, "", id);
                     resolve(response);
-                }).catch(function(error) {
+                }).catch(function (error) {
                     var response = new CreateResponse(false, error, "");
                     reject(response);
                 })
@@ -72,13 +72,13 @@ module.exports = {
             });
         })
     },
-    getListItem : function(req) {
-        return new Promise (function(resolve,reject) {
-            dao.executeQuery(queries.GET_QUERY).then(function (result){
+    getListItem: function (req) {
+        return new Promise(function (resolve, reject) {
+            dao.executeQuery(queries.GET_QUERY).then(function (result) {
                 var response = new CreateResponse(true, "", result);
                 resolve(response);
-            }).catch(function(error) {
-                var response = new CreateResponse(false,error, "");
+            }).catch(function (error) {
+                var response = new CreateResponse(false, error, "");
                 reject(response);
             });
         })
