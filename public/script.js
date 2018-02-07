@@ -17,13 +17,14 @@ function xmlrequest(type, url, content, callback) {
     var request = new window.XMLHttpRequest();
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
+            console.log(request.responseText);
             if (callback != undefined) {
                 console.log(request.responseText);
                 // console.log(JSON.parse(request.responseText));
                 callback(request.responseText);
             }
         }
-    };
+     };
     request.open(type, url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(content);
@@ -78,7 +79,6 @@ var view = {
         newList.dataset.id = 'list-item-' + id;
         newList.appendChild(listText);
         var checkStrikeButton = view.createStrikeButton(id);
-
         if (todoItem.is_checked == 1) {
             listText.classList.add("line-through");
             checkStrikeButton.innerHTML = "Uncheck";
@@ -117,9 +117,9 @@ function updateAndDelete(event) {
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
+        xmlrequest("delete", "list-item/" + getId[3], null, null);
         if (window.confirm('Do you want to delete the selected list item?') == true) {
             window.document.querySelector('li[data-id="list-item-' + getId[3] + '"]').remove();
-            xmlrequest("delete", "list-item/" + getId[3], null, null);
         }
     } else if (getId[0] == 'update') {
         xmlrequest("put", "list-item", "id=" + getId[3], null);
