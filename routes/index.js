@@ -4,9 +4,7 @@ var app = express();
 var mysql = require('mysql');
 var queries = require('./queries');
 var dbconfig = require('./dbconfig');
-var errors = require('./errors');
 var mysql = require('mysql');
-var dbDelegate = require('./dbDelegate');
 var listItem;
 var delegate = require('./delegate');
 //Constructor to add todo Items 

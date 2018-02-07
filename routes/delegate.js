@@ -22,7 +22,7 @@ module.exports = {
                 var listItem = new CreateListItem(id, req.body.desc);
                 var insertListStatement = mysql.format(queries.INSERT_QUERY, [id, req.body.desc]);
                 dao.executeQuery(insertListStatement).then(function (result) {
-                    var response = new CreateResponse(true, "", JSON.stringify(listItem));
+                    var response = new CreateResponse(true, "", listItem);
                     resolve(response);
                 }).catch(function (error) {
                     var response = new CreateResponse(false, error, "");
