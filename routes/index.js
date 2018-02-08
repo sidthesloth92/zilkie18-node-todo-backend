@@ -10,13 +10,6 @@ var delegate = require('./delegate');
 var jwt = require('jsonwebtoken');
 
 
-//using cors package
-// var cors = require('cors');
-// var corsOptions = {
-//   origin: '*',
-//   methods : ['GET','PUT','DELETE','POST']
-// }
-
 
 router.use('*', function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -66,10 +59,14 @@ router.put('/list-item', function (req, res, next) {
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
+
+  delegate.checkToken(req).then(function (decodedObject) {
   delegate.deleteListItem(req).then(function (successResponse) {
     res.json(successResponse);
   }).catch(function (failureResponse) {
     res.json(failureResponse);
+  })}).catch(function (error) {
+    res.json(error);
   });
 
 
