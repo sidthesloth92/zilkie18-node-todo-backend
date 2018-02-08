@@ -39,7 +39,6 @@ module.exports = {
                 if (err) {
                     reject(new CreateResponse('false','token invalid',''));
                 }
-    
                 else if (decoded) {
                     resolve(decoded);
                 }
