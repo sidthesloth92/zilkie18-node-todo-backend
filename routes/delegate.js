@@ -33,10 +33,9 @@ module.exports = {
         }
         return response;
     },
-    checkToken: function (req) {
-        
+    checkToken: function (token) {
         return new Promise(function(resolve,reject) {
-            jwt.verify(req.body.token, 'privatekey', function (err, decoded) {
+            jwt.verify(token, 'privatekey', function (err, decoded) {
                 if (err) {
                     reject(new CreateResponse('false','token invalid',''));
                 }
