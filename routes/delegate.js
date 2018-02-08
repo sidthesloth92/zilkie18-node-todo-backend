@@ -29,14 +29,12 @@ module.exports = {
                     var response = new CreateResponse(false, error, "");
                     reject(response);
                 });
-
             }).catch(function (error) {
                 var response = new CreateResponse(false, error, "");
                 reject(response);
             });
         });
     },
-
     deleteListItem: function (req) {
         return new Promise(function (resolve, reject) {
             var id = req.params.id;

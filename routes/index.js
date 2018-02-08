@@ -7,7 +7,41 @@ var dbconfig = require('./dbconfig');
 var mysql = require('mysql');
 var listItem;
 var delegate = require('./delegate');
+var jwt = require('jsonwebtoken');
 
+router.post('/api/login', function (req, res) {
+  const user = { id: 3 };
+  const token = jwt.sign({ user }, 'hello');
+  res.json({
+    message: 'Authenticated! Use this token in the "Authorization" header',
+    token: token
+  });
+});
+
+router.get('/api/protected', ensureToken, function (req, res) {
+  jwt.verify(req.token, 'hello', function(err, data) {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      res.json({
+        data: data
+      });
+    }
+  });
+});
+
+function ensureToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  console.log(bearerHeader);
+  if (typeof bearerHeader !== 'undefined') {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+    next();
+  } else {
+    res.sendStatus(403);
+  }
+}
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
   delegate.addListItem(req).then(function (response) {
