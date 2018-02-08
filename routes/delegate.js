@@ -15,9 +15,7 @@ function CreateResponse(isSuccess, errorCode, data) {
     this.data = data;
 }
 
-
 module.exports = {
-
     authenticate: function (req) {
         var response;
         if (req.body.uname == "naveen" && req.body.password == "karthick") {
@@ -34,18 +32,16 @@ module.exports = {
         return response;
     },
     checkToken: function (token) {
-        return new Promise(function(resolve,reject) {
+        return new Promise(function (resolve, reject) {
             jwt.verify(token, 'privatekey', function (err, decoded) {
                 if (err) {
-                    reject(new CreateResponse('false','token invalid',''));
+                    reject(new CreateResponse('false', 'token invalid', ''));
                 }
                 else if (decoded) {
                     resolve(decoded);
                 }
             });
         });
-        
-        
     },
     addListItem: function (req) {
         return new Promise(function (resolve, reject) {
@@ -61,14 +57,12 @@ module.exports = {
                     var response = new CreateResponse(false, error, "");
                     reject(response);
                 });
-
             }).catch(function (error) {
                 var response = new CreateResponse(false, error, "");
                 reject(response);
             });
         });
     },
-
     deleteListItem: function (req) {
         return new Promise(function (resolve, reject) {
             var id = req.params.id;

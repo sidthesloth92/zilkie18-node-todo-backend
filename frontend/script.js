@@ -10,7 +10,7 @@ window.onload = function () {
 //Retreive todoItems on load
 function getTodos() {
     var token = getToken(document.cookie, 'jwtToken');
-    xmlrequest('GET', 'list-item?token='+token, "", addTodosToPage);
+    xmlrequest('GET', 'list-item?token=' + token, "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
 }
 
@@ -41,13 +41,11 @@ function init() {
 function addList() {
     var text = $('#add-list-item').val().replace(/^\s+$/g, '');
     var token = getToken(document.cookie, 'jwtToken');
-
     if (text.length == 0) {
         alert('Enter the task in the text field');
     } else {
-        xmlrequest("POST", "list-item", "token=" + token + "&desc="+text, addTodosToPage);
+        xmlrequest("POST", "list-item", "token=" + token + "&desc=" + text, addTodosToPage);
     }
-
 }
 
 //Create an element in the UI list
@@ -125,7 +123,6 @@ function getToken(cookie, key) {
 
 function updateAndDelete(event) {
     var token = getToken(document.cookie, 'jwtToken');
-    console.log(token);
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
@@ -133,19 +130,17 @@ function updateAndDelete(event) {
             xmlrequest("delete", "list-item/" + getId[3], "token="+token, deleteItem);
         }
     } else if (getId[0] == 'update') {
-        xmlrequest("put", "list-item", "id=" + getId[3], updateUIItem);
+        xmlrequest("put", "list-item", "token=" + token + "&id=" + getId[3], updateUIItem);
     }
 }
+
 function deleteItem(responseData) {
     var isSuccess = JSON.parse(responseData).isSuccess;
     var id = JSON.parse(responseData).data;
     if (isSuccess==true) {
         window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();
-
     }
 }
-
-
 
 function updateUIItem(updateResponseData) {
     var id = (JSON.parse(updateResponseData)).data;
