@@ -66,7 +66,7 @@ router.delete('/list-item/:id', function (req, res, next) {
       res.json(successResponse);
     }).catch(function (failureResponse) {
       res.json(failureResponse);
-s    })
+    })
   }).catch(function (error) {
     res.json(error);
   });

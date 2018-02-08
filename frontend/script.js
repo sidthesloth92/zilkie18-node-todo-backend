@@ -4,7 +4,6 @@ var fragment = window.document.createDocumentFragment();
 
 window.onload = function () {
     init();
-    console.log(document.cookie);
     getTodos();
 }
 //Retreive todoItems on load
@@ -39,7 +38,7 @@ function init() {
 }
 
 function addList() {
-    var text = $('#add-list-item').val().replace(/^\s+$/g, '');
+    var text = $('#add-list-item').val().replace(/^\s+$/, '');
     var token = getToken(document.cookie, 'jwtToken');
     if (text.length == 0) {
         alert('Enter the task in the text field');
@@ -87,6 +86,7 @@ var view = {
         return newList;
     }
 };
+
 //Adding todos to page after retrieving
 function addTodosToPage(todos) {
     var response = JSON.parse(todos);
@@ -104,6 +104,7 @@ function addTodosToPage(todos) {
             }
         }
         element.insertBefore(fragment, element.childNodes[0]);
+        document.getElementById("add-list-item").value = "";
     }
 }
 
