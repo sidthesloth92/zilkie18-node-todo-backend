@@ -125,6 +125,7 @@ function getToken(cookie, key) {
 
 function updateAndDelete(event) {
     var token = getToken(document.cookie, 'jwtToken');
+    console.log(token);
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {

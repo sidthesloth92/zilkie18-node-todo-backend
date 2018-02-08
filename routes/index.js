@@ -20,10 +20,9 @@ router.use('*', function (req, res, next) {
 
 
 router.post('/login', function (req, res, next) {
-
   res.json(delegate.authenticate(req));
-
 });
+
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
   delegate.checkToken(req.body.token).then(function (decodedObject) {
@@ -43,14 +42,14 @@ router.post('/list-item', function (req, res, next) {
 router.get('/list-item', function (req, res, next) {
   console.log(req.query.token);
   delegate.checkToken(req.query.token).then(function (decodedObject) {
-  delegate.getListItem(req).then(function (response) {
-    res.json(response);
+    delegate.getListItem(req).then(function (response) {
+      res.json(response);
+    }).catch(function (error) {
+      res.json(error);
+    })
   }).catch(function (error) {
     res.json(error);
-  })
-}).catch(function (error) {
-  res.json(error);
-});
+  });
 });
 
 //PUT request - To Update status of a list item.
@@ -64,17 +63,16 @@ router.put('/list-item', function (req, res, next) {
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
-
-  delegate.checkToken(req).then(function (decodedObject) {
-  delegate.deleteListItem(req).then(function (successResponse) {
-    res.json(successResponse);
-  }).catch(function (failureResponse) {
-    res.json(failureResponse);
-  })}).catch(function (error) {
+  console.log(req.body.token);
+  delegate.checkToken(req.body.token).then(function (decodedObject) {
+    delegate.deleteListItem(req).then(function (successResponse) {
+      res.json(successResponse);
+    }).catch(function (failureResponse) {
+      res.json(failureResponse);
+    })
+  }).catch(function (error) {
     res.json(error);
   });
-
-
 });
 
 
