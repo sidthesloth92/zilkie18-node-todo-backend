@@ -28,7 +28,7 @@ $('document').ready(function () {
 function checkToken(response) {
     var json = JSON.parse(response);
     if (json.isSuccess == true) {
-        document.cookie = "jwtToken="+json.data;
+        document.cookie = "jwtToken=" + json.data;
         window.location = "http://127.0.0.1:8080/";
     }
     else {

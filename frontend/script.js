@@ -9,7 +9,8 @@ window.onload = function () {
 }
 //Retreive todoItems on load
 function getTodos() {
-    xmlrequest('GET', 'list-item', "", addTodosToPage);
+    var token = getToken(document.cookie, 'jwtToken');
+    xmlrequest('GET', 'list-item?token=' + token, "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
 }
 
@@ -43,7 +44,7 @@ function addList() {
     if (text.length == 0) {
         alert('Enter the task in the text field');
     } else {
-        xmlrequest("POST", "list-item", "token=" + token + "&desc="+text, addTodosToPage);
+        xmlrequest("POST", "list-item", "token=" + token + "&desc=" + text, addTodosToPage);
     }
 }
 
@@ -129,7 +130,7 @@ function updateAndDelete(event) {
             xmlrequest("delete", "list-item/" + getId[3], null, deleteItem);
         }
     } else if (getId[0] == 'update') {
-        xmlrequest("put", "list-item","token=" + token + "&id=" + getId[3], updateUIItem);
+        xmlrequest("put", "list-item", "token=" + token + "&id=" + getId[3], updateUIItem);
     }
 }
 

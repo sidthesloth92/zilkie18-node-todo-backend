@@ -31,19 +31,17 @@ module.exports = {
         }
         return response;
     },
-    checkToken: function (req) {
-        return new Promise(function(resolve,reject) {
-            jwt.verify(req.body.token, 'privatekey', function (err, decoded) {
+    checkToken: function (token) {
+        return new Promise(function (resolve, reject) {
+            jwt.verify(token, 'privatekey', function (err, decoded) {
                 if (err) {
-                    reject(new CreateResponse('false','token invalid',''));
+                    reject(new CreateResponse('false', 'token invalid', ''));
                 }
                 else if (decoded) {
                     resolve(decoded);
                 }
             });
         });
-        
-        
     },
     addListItem: function (req) {
         return new Promise(function (resolve, reject) {

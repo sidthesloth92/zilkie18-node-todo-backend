@@ -17,13 +17,12 @@ router.use('*', function (req, res, next) {
 });
 
 router.post('/login', function (req, res, next) {
-  console.log('hello');
   res.json(delegate.authenticate(req));
 });
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
-  delegate.checkToken(req).then(function (decodedObject) {
+  delegate.checkToken(req.body.token).then(function (decodedObject) {
     delegate.addListItem(req).then(function (response) {
       res.json(response);
     }).catch(function (error) {
@@ -36,16 +35,22 @@ router.post('/list-item', function (req, res, next) {
 
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
-  delegate.getListItem(req).then(function (response) {
-    res.json(response);
+  console.log(req.query.token);
+  delegate.checkToken(req.query.token).then(function (decodedObject) {
+    delegate.getListItem(req).then(function (response) {
+      res.json(response);
+    }).catch(function (error) {
+      res.json(error);
+    })
   }).catch(function (error) {
     res.json(error);
-  })
+  });
 });
 
 //PUT request - To Update status of a list item.
 router.put('/list-item', function (req, res, next) {
-  delegate.checkToken(req).then(function (decodedObject) {
+  console.log(req.body.token);
+  delegate.checkToken(req.body.token).then(function (decodedObject) {
     delegate.updateListItem(req).then(function (response) {
       res.json(response);
     }).catch(function (error) {
@@ -63,9 +68,6 @@ router.delete('/list-item/:id', function (req, res, next) {
   }).catch(function (failureResponse) {
     res.json(failureResponse);
   });
-
-
 });
-
 
 module.exports = router;
