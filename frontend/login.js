@@ -29,7 +29,7 @@ function checkToken(response) {
     var json = JSON.parse(response);
     if (json.isSuccess == true) {
         document.cookie = "jwtToken=" + json.data;
-        window.location = "http://127.0.0.1:8080/";
+        window.location = "http://127.0.0.1:8080/todo-list.html";
     }
     else {
         console.log(json);

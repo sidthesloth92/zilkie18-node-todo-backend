@@ -35,7 +35,6 @@ router.post('/list-item', function (req, res, next) {
 
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
-  console.log(req.query.token);
   delegate.checkToken(req.query.token).then(function (decodedObject) {
     delegate.getListItem(req).then(function (response) {
       res.json(response);
@@ -49,7 +48,6 @@ router.get('/list-item', function (req, res, next) {
 
 //PUT request - To Update status of a list item.
 router.put('/list-item', function (req, res, next) {
-  console.log(req.body.token);
   delegate.checkToken(req.body.token).then(function (decodedObject) {
     delegate.updateListItem(req).then(function (response) {
       res.json(response);
