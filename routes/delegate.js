@@ -1,6 +1,7 @@
 var queries = require('./queries');
 var dao = require('./dao');
 var mysql = require('mysql');
+var jwt = require('jsonwebtoken');
 
 function CreateListItem(id, desc) {
     this.id = id;
@@ -14,7 +15,39 @@ function CreateResponse(isSuccess, errorCode, data) {
     this.data = data;
 }
 
+
 module.exports = {
+
+    authenticate: function (req) {
+        var response;
+        if (req.body.uname == "naveen" && req.body.password == "karthick") {
+            var jsonObject = {
+                'name': req.body.uname,
+                'admin': true
+            }
+            var token = jwt.sign(jsonObject, 'privatekey')
+            response = new CreateResponse(true, "", token);
+        }
+        else {
+            response = new CreateResponse(false, "Invalid username and password combination", "");
+        }
+        return response;
+    },
+    checkToken: function (token) {
+        return new Promise(function(resolve,reject) {
+            jwt.verify(token, 'privatekey', function (err, decoded) {
+                if (err) {
+                    reject(new CreateResponse('false','token invalid',''));
+                }
+    
+                else if (decoded) {
+                    resolve(decoded);
+                }
+            });
+        });
+        
+        
+    },
     addListItem: function (req) {
         return new Promise(function (resolve, reject) {
             var getIdStatement = queries.POST_ID;
@@ -35,21 +68,21 @@ module.exports = {
                 reject(response);
             });
         });
-    }  ,
+    },
 
-    deleteListItem:function(req)
-    { return new Promise(function (resolve, reject) {
-       var id = req.params.id; 
-       var deleteQuery= mysql.format(queries.DELETE_QUERY, [id]);
-       dao.executeQuery(deleteQuery).then(function (result) {
-        var successResponse = new CreateResponse(true, "",id);
-        resolve(successResponse);
-    }).catch(function (error) {
-        var errorResponse = new CreateResponse(false, error, "");
-        reject(errorResponse);
-    });
+    deleteListItem: function (req) {
+        return new Promise(function (resolve, reject) {
+            var id = req.params.id;
+            var deleteQuery = mysql.format(queries.DELETE_QUERY, [id]);
+            dao.executeQuery(deleteQuery).then(function (result) {
+                var successResponse = new CreateResponse(true, "", id);
+                resolve(successResponse);
+            }).catch(function (error) {
+                var errorResponse = new CreateResponse(false, error, "");
+                reject(errorResponse);
+            });
 
-    });
+        });
 
     },
     updateListItem: function (req) {
@@ -62,7 +95,7 @@ module.exports = {
                 dao.executeQuery(updateCheckedStatus).then(function (result) {
                     var response = new CreateResponse(true, "", id);
                     resolve(response);
-                }).catch(function(error) {
+                }).catch(function (error) {
                     var response = new CreateResponse(false, error, "");
                     reject(response);
                 })
@@ -72,13 +105,13 @@ module.exports = {
             });
         })
     },
-    getListItem : function(req) {
-        return new Promise (function(resolve,reject) {
-            dao.executeQuery(queries.GET_QUERY).then(function (result){
+    getListItem: function (req) {
+        return new Promise(function (resolve, reject) {
+            dao.executeQuery(queries.GET_QUERY).then(function (result) {
                 var response = new CreateResponse(true, "", result);
                 resolve(response);
-            }).catch(function(error) {
-                var response = new CreateResponse(false,error, "");
+            }).catch(function (error) {
+                var response = new CreateResponse(false, error, "");
                 reject(response);
             });
         })

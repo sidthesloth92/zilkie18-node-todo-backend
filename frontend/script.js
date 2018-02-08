@@ -4,17 +4,19 @@ var fragment = window.document.createDocumentFragment();
 
 window.onload = function () {
     init();
+    console.log(document.cookie);
     getTodos();
 }
 //Retreive todoItems on load
 function getTodos() {
-    xmlrequest('GET', 'list-item', "", addTodosToPage);
+    var token = getToken(document.cookie, 'jwtToken');
+    xmlrequest('GET', 'list-item?token='+token, "", addTodosToPage);
     document.getElementById('get-item-button').classList.add("dont-display");
 }
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
-    var request = new window.XMLHttpRequest();
+    var request = new window.XMLHttpRequest({ mozSystem: true });
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             console.log(request.responseText);
@@ -22,8 +24,9 @@ function xmlrequest(type, url, content, callback) {
                 callback(request.responseText);
             }
         }
-     };
-    request.open(type, url, true);
+    };
+    request.open(type, "http://localhost:3000/" + url, true);
+    request.setRequestHeader("Access-Control-Allow-Methods", "*");
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(content);
 }
@@ -37,11 +40,14 @@ function init() {
 
 function addList() {
     var text = $('#add-list-item').val().replace(/^\s+$/g, '');
+    var token = getToken(document.cookie, 'jwtToken');
+
     if (text.length == 0) {
         alert('Enter the task in the text field');
     } else {
-        xmlrequest("post", "list-item", "desc=" + text, addTodosToPage);
+        xmlrequest("POST", "list-item", "token=" + token + "&desc="+text, addTodosToPage);
     }
+
 }
 
 //Create an element in the UI list
@@ -93,48 +99,56 @@ function addTodosToPage(todos) {
         if (toDo.id > 0) {
             fragment.appendChild(view.createUIItem(toDo));
         }
-        else if(toDo.length > 0) {
+        else if (toDo.length > 0) {
             for (var i = 0; i < toDo.length; i++) {
                 var todoItem = toDo[i];
                 fragment.appendChild(view.createUIItem(todoItem));
             }
-
         }
         element.insertBefore(fragment, element.childNodes[0]);
     }
+}
 
+function getToken(cookie, key) {
+    var ca = cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c[0] == " ") {
+            c = c.substring(1);
+        }
+        if (c.indexOf(key) == 0) {
+            return c.substring(key.length + 1).trim();
+        }
+    }
+    return "";
 }
 
 function updateAndDelete(event) {
+
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
         if (window.confirm('Do you want to delete the selected list item?') == true) {
-            xmlrequest("delete", "list-item/" + getId[3],null,deleteItem);
+            xmlrequest("delete", "list-item/" + getId[3], null, deleteItem);
         }
     } else if (getId[0] == 'update') {
         xmlrequest("put", "list-item", "id=" + getId[3], updateUIItem);
     }
 }
-function deleteItem(responseData)
-{
-var isSuccess=JSON.parse(responseData).isSuccess;
-var id=JSON.parse(responseData).data;
-if(isSuccess)
-{
-    window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();  
+function deleteItem(responseData) {
+    var isSuccess = JSON.parse(responseData).isSuccess;
+    var id = JSON.parse(responseData).data;
+    if (isSuccess) {
+        window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();
 
-}
-else{
-    console.log("Error In Deleting");
-}
+    }
 }
 
 
 
 function updateUIItem(updateResponseData) {
     var id = (JSON.parse(updateResponseData)).data;
-    if(JSON.parse(updateResponseData).isSuccess == true) {
+    if (JSON.parse(updateResponseData).isSuccess == true) {
         if (document.querySelector('div[data-id="list-text-' + id + '"]').classList.contains('line-through')) {
             document.querySelector('div[data-id="list-text-' + id + '"]').classList.remove('line-through');
             document.querySelector('.checked-button[data-id="update-item-button-' + id + '"]').innerHTML = 'Check';
