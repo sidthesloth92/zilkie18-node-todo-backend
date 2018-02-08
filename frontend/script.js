@@ -127,7 +127,7 @@ function updateAndDelete(event) {
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
         if (window.confirm('Do you want to delete the selected list item?') == true) {
-            xmlrequest("delete", "list-item/" + getId[3], null, deleteItem);
+            xmlrequest("delete", "list-item/" + getId[3], "token="+token, deleteItem);
         }
     } else if (getId[0] == 'update') {
         xmlrequest("put", "list-item", "token=" + token + "&id=" + getId[3], updateUIItem);
@@ -137,7 +137,7 @@ function updateAndDelete(event) {
 function deleteItem(responseData) {
     var isSuccess = JSON.parse(responseData).isSuccess;
     var id = JSON.parse(responseData).data;
-    if (isSuccess) {
+    if (isSuccess==true) {
         window.document.querySelector('li[data-id="list-item-' + id + '"]').remove();
     }
 }

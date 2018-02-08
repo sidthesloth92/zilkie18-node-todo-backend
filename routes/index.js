@@ -61,10 +61,14 @@ router.put('/list-item', function (req, res, next) {
 
 //DELETE - to remove list item
 router.delete('/list-item/:id', function (req, res, next) {
-  delegate.deleteListItem(req).then(function (successResponse) {
-    res.json(successResponse);
-  }).catch(function (failureResponse) {
-    res.json(failureResponse);
+  delegate.checkToken(req.body.token).then(function (decodedObject) {
+    delegate.deleteListItem(req).then(function (successResponse) {
+      res.json(successResponse);
+    }).catch(function (failureResponse) {
+      res.json(failureResponse);
+s    })
+  }).catch(function (error) {
+    res.json(error);
   });
 });
 
