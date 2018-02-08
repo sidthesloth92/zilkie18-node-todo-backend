@@ -9,43 +9,26 @@ var listItem;
 var delegate = require('./delegate');
 var jwt = require('jsonwebtoken');
 
-router.post('/api/login', function (req, res) {
-  const user = { id: 3 };
-  const token = jwt.sign({ user }, 'hello');
-  res.json({
-    message: 'Authenticated! Use this token in the "Authorization" header',
-    token: token
-  });
+router.use('*', function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  next();
 });
 
-router.get('/api/protected', ensureToken, function (req, res) {
-  jwt.verify(req.token, 'hello', function(err, data) {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      res.json({
-        data: data
-      });
-    }
-  });
+router.post('/login', function (req, res, next) {
+  console.log('hello');
+  res.json(delegate.authenticate(req));
 });
 
-function ensureToken(req, res, next) {
-  const bearerHeader = req.headers["authorization"];
-  console.log(bearerHeader);
-  if (typeof bearerHeader !== 'undefined') {
-    const bearer = bearerHeader.split(" ");
-    const bearerToken = bearer[1];
-    req.token = bearerToken;
-    next();
-  } else {
-    res.sendStatus(403);
-  }
-}
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
-  delegate.addListItem(req).then(function (response) {
-     res.json(response);
+  delegate.checkToken(req).then(function (decodedObject) {
+    delegate.addListItem(req).then(function (response) {
+      res.json(response);
+    }).catch(function (error) {
+      res.json(error);
+    });
   }).catch(function (error) {
     res.json(error);
   });
@@ -54,7 +37,7 @@ router.post('/list-item', function (req, res, next) {
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
   delegate.getListItem(req).then(function (response) {
-     res.json(response);
+    res.json(response);
   }).catch(function (error) {
     res.json(error);
   })
@@ -62,8 +45,12 @@ router.get('/list-item', function (req, res, next) {
 
 //PUT request - To Update status of a list item.
 router.put('/list-item', function (req, res, next) {
-  delegate.updateListItem(req).then(function (response) {
-    res.json(response);
+  delegate.checkToken(req).then(function (decodedObject) {
+    delegate.updateListItem(req).then(function (response) {
+      res.json(response);
+    }).catch(function (error) {
+      res.json(error);
+    });
   }).catch(function (error) {
     res.json(error);
   });
