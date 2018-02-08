@@ -7,6 +7,13 @@ var dbconfig = require('./dbconfig');
 var mysql = require('mysql');
 var listItem;
 var delegate = require('./delegate');
+var jwt = require('jsonwebtoken');
+var authenticateController = require('./authenticateController');
+var secureRoute = express.Router();
+
+process.env.SECRET_KEY = "key";
+
+app.use("/secure-api", secureRoute);
 
 //POST request - To add todos
 router.post('/list-item', function (req, res, next) {
@@ -19,7 +26,7 @@ router.post('/list-item', function (req, res, next) {
 
 // GET request - Retrieve data
 router.get('/list-item', function (req, res, next) {
-  delegate.getListItem(req).then(function(response) {
+  delegate.getListItem(req).then(function (response) {
     res.json(response);
   }).catch(function (error) {
     res.json(error);
@@ -42,7 +49,7 @@ router.delete('/list-item/:id', function (req, res, next) {
   }).catch(function (failureResponse) {
     res.json(failureResponse);
   });
-  
+
 
 });
 
