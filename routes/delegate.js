@@ -1,6 +1,7 @@
 var queries = require('./queries');
 var dao = require('./dao');
 var mysql = require('mysql');
+var jwt = require('jsonwebtoken');
 
 function CreateListItem(id, desc) {
     this.id = id;
@@ -14,7 +15,40 @@ function CreateResponse(isSuccess, errorCode, data) {
     this.data = data;
 }
 
+
 module.exports = {
+
+    authenticate: function (req) {
+        var response;
+        if (req.body.uname == "naveen" && req.body.password == "karthick") {
+            var jsonObject = {
+                'name': req.body.uname,
+                'admin': true
+            }
+            var token = jwt.sign(jsonObject, 'privatekey')
+            response = new CreateResponse(true, "", token);
+        }
+        else {
+            response = new CreateResponse(false, "Invalid username and password combination", "");
+        }
+        return response;
+    },
+    checkToken: function (req) {
+        
+        return new Promise(function(resolve,reject) {
+            jwt.verify(req.body.token, 'privatekey', function (err, decoded) {
+                if (err) {
+                    reject(new CreateResponse('false','token invalid',''));
+                }
+    
+                else if (decoded) {
+                    resolve(decoded);
+                }
+            });
+        });
+        
+        
+    },
     addListItem: function (req) {
         return new Promise(function (resolve, reject) {
             var getIdStatement = queries.POST_ID;

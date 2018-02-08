@@ -4,6 +4,7 @@ var fragment = window.document.createDocumentFragment();
 
 window.onload = function () {
     init();
+    console.log(document.cookie);
     getTodos();
 }
 //Retreive todoItems on load
@@ -14,7 +15,7 @@ function getTodos() {
 
 function xmlrequest(type, url, content, callback) {
     // define the type of request either get,put,delete or post
-    var request = new window.XMLHttpRequest({mozSystem:true});
+    var request = new window.XMLHttpRequest({ mozSystem: true });
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             console.log(request.responseText);
@@ -23,9 +24,9 @@ function xmlrequest(type, url, content, callback) {
             }
         }
     };
-    request.open(type, "http://localhost:3000/"+url, true);
-    request.setRequestHeader("Access-Control-Allow-Methods","*");
-     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.open(type, "http://localhost:3000/" + url, true);
+    request.setRequestHeader("Access-Control-Allow-Methods", "*");
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send(content);
 }
 
@@ -38,11 +39,14 @@ function init() {
 
 function addList() {
     var text = $('#add-list-item').val().replace(/^\s+$/g, '');
+    var token = getToken(document.cookie, 'jwtToken');
+
     if (text.length == 0) {
         alert('Enter the task in the text field');
     } else {
-        xmlrequest("POST", "list-item", "desc=" + text, addTodosToPage);
+        xmlrequest("POST", "list-item", "token=" + token + "&desc="+text, addTodosToPage);
     }
+
 }
 
 //Create an element in the UI list
@@ -104,7 +108,22 @@ function addTodosToPage(todos) {
     }
 }
 
+function getToken(cookie, key) {
+    var ca = cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c[0] == " ") {
+            c = c.substring(1);
+        }
+        if (c.indexOf(key) == 0) {
+            return c.substring(key.length + 1).trim();
+        }
+    }
+    return "";
+}
+
 function updateAndDelete(event) {
+
     var element = event.target;
     var getId = element.dataset.id.split('-');
     if (getId[0] == 'delete') {
