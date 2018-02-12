@@ -1,4 +1,3 @@
-var connection;
 var mysql = require('mysql');
 
 module.exports = {
@@ -10,4 +9,4 @@ module.exports = {
             database: "todo_list"
         });
     }
-}   
+}

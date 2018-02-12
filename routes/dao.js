@@ -7,7 +7,6 @@ module.exports = {
             con.connect(function (err) {
                 if (err) {
                     reject(err.code);
-                    
                 }
                 con.query(statement, function (err, result) {
                     if (err) {

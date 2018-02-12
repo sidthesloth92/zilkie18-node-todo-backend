@@ -35,6 +35,12 @@ function init() {
     $('#to-do-list-items').click(function updateAndDelete1(event) {
         updateAndDelete(event);
     });
+    $('#export-todo-list').click(exportList);
+}
+
+function exportList() {
+    var token = getToken(document.cookie, 'jwtToken');
+    xmlrequest('GET', 'export-list?token=' + token, "", null);
 }
 
 function addList() {

@@ -2,6 +2,8 @@ var queries = require('./queries');
 var dao = require('./dao');
 var mysql = require('mysql');
 var jwt = require('jsonwebtoken');
+var json2csv = require('json2csv');
+var fs = require('fs');
 
 function CreateListItem(id, desc) {
     this.id = id;
@@ -74,9 +76,7 @@ module.exports = {
                 var errorResponse = new CreateResponse(false, error, "");
                 reject(errorResponse);
             });
-
         });
-
     },
     updateListItem: function (req) {
         return new Promise(function (resolve, reject) {
@@ -103,6 +103,22 @@ module.exports = {
             dao.executeQuery(queries.GET_QUERY).then(function (result) {
                 var response = new CreateResponse(true, "", result);
                 resolve(response);
+            }).catch(function (error) {
+                var response = new CreateResponse(false, error, "");
+                reject(response);
+            });
+        })
+    },
+    exportListToCSV: function (req) {
+        return new Promise(function (resolve, reject) {
+            dao.executeQuery(queries.GET_QUERY).then(function (result) {
+                var inJSON = { "res": [] };
+                for(i = 0;i < result.length; i++) {
+                    inJSON.res.push({"id": result[i].id, "Description": result[i].description, "Status": result[i].is_checked});
+                }
+                var fields = ['id', 'Description', 'Status'];
+                var csv = json2csv({ data: inJSON.res, fields: fields });
+                resolve(csv);
             }).catch(function (error) {
                 var response = new CreateResponse(false, error, "");
                 reject(response);
